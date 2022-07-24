@@ -6,15 +6,26 @@
 using namespace std;
 
 int main() {
-	Ball player;
-	player.setPosition(sf::Vector2f(100, 100));
-	player.setMoving(sf::Vector2f(10, 5));
-	sf::Clock clock;
-	clock.restart();
-	this_thread::sleep_for(chrono::milliseconds(1000));
-	cout << clock.getElapsedTime().asSeconds() << endl;
-	player.update(clock.getElapsedTime().asSeconds());
-	cout << player.getBall().getPosition().x << "   " << player.getBall().getPosition().y << endl;
+	PingPong pong;
+
+    sf::RenderWindow window(sf::VideoMode(screen_width, screen_height), "SFML works!");
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+        window.draw(pong.players[0].getPanel());
+        window.draw(pong.players[1].getPanel());
+        window.draw(pong.ball.getBall());
+        window.display();
+        this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
 
 	return 0;
 }

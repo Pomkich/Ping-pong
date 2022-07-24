@@ -7,7 +7,8 @@
 #include "Constants.h"
 
 class PingPong {
-private:
+public:
+//private:
 	MoveSide player_move[2];
 	std::array<Player, 2> players;
 	std::array<sf::RectangleShape, 2> walls;
