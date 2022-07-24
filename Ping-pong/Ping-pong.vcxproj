@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="PingPong.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
