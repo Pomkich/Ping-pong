@@ -10,14 +10,14 @@ PingPong::PingPong() {
 	players[0].setPosition(
 		sf::Vector2f((screen_width - panel_width) / 2, panel_height));
 	players[1].setPosition(
-		sf::Vector2f((screen_width - panel_width) / 2, screen_height - panel_height));
+		sf::Vector2f((screen_width - panel_width) / 2, screen_height - panel_height * 2));
 
 	// placing walls and setting it's size
 	// left wall
 	walls[0].setPosition(0, 0);
 	walls[0].setSize(sf::Vector2f(1, screen_height));
 	// right wall
-	walls[1].setPosition(screen_width, 0);
+	walls[1].setPosition(screen_width - 1, 0);
 	walls[1].setSize(sf::Vector2f(1, screen_height));
 
 	// setting up a ball
@@ -33,10 +33,10 @@ void PingPong::update(float dt_time) {
 			players[i].setMoving(sf::Vector2f(0, 0));
 			break;
 		case MoveSide::right:
-			players[i].setMoving(sf::Vector2f(10, 0));
+			players[i].setMoving(sf::Vector2f(800, 0));
 			break;
 		case MoveSide::left:
-			players[i].setMoving(sf::Vector2f(-10, 0));
+			players[i].setMoving(sf::Vector2f(-800, 0));
 			break;
 		}
 	}
@@ -48,15 +48,16 @@ void PingPong::update(float dt_time) {
 }
 
 void PingPong::checkCollisions() {
-
+	// simulating a work...
+	std::this_thread::sleep_for(std::chrono::milliseconds(8));
 }
 
 void PingPong::Run() {
+	std::cout << "game started" << std::endl;
 	while (true) {
 		clock.restart();
 		checkCollisions();
 		update(clock.getElapsedTime().asSeconds());
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	}
 }
 

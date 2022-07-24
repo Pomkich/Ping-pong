@@ -5,6 +5,7 @@
 #include "Ball.h"
 #include "Player.h"
 #include "Constants.h"
+#include <iostream>
 
 class PingPong {
 public:
@@ -22,6 +23,6 @@ public:
 	void setPlayerMove(MoveSide s, int id);
 
 private:
-	void update(float dt_time);
+	void update(float dt_time);	// warning: if delta time >> 0 so it can't be updated
 	void checkCollisions();
 };
