@@ -2,8 +2,14 @@
 #include <SFML/Graphics.hpp>
 
 class Player {
-private:
-	int i;
+	sf::RectangleShape panel;		// the panel controlled by the player
+	sf::Vector2f moving_vector;
+
 public:
-	Player() { i = 0; };
+	Player();
+	void update(float dt_time);
+
+	sf::RectangleShape& getPanel();
+	void setMoving(sf::Vector2f moving);
+	void setPosition(sf::Vector2f pos);
 };
