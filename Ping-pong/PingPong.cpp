@@ -29,19 +29,8 @@ PingPong::PingPong() {
 
 void PingPong::update(float dt_time) {
 	for (int i = 0; i < players.size(); i++) {
-		if (player_move[i].first) {	// left vector enabled
-			players[i].enableMoving(MoveSide::left);
-		}
-		else {						// left vector disabled
-			players[i].disableMoving(MoveSide::left);
-		}
-
-		if (player_move[i].second) {	// right vector enabled
-			players[i].enableMoving(MoveSide::right);
-		}
-		else {						// right vector disabled
-			players[i].disableMoving(MoveSide::right);
-		}
+		players[i].setMoving(MoveSide::left, player_move[i].first);
+		players[i].setMoving(MoveSide::right, player_move[i].second);
 	}
 
 	for (int i = 0; i < players.size(); i++) {

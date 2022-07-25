@@ -13,7 +13,6 @@ public:
 	void update(float dt_time);
 
 	sf::RectangleShape& getPanel();
-	void enableMoving(MoveSide side);
-	void disableMoving(MoveSide side);
+	void setMoving(MoveSide side, bool enabled);
 	void setPosition(sf::Vector2f pos);
 };

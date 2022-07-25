@@ -1,7 +1,7 @@
 #pragma once
 
 enum class MoveSide {
-	left, hold, right
+	left, right
 };
 
 const int screen_width = 800;

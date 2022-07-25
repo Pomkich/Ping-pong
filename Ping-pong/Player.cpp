@@ -19,26 +19,14 @@ sf::RectangleShape& Player::getPanel() {
 	return panel;
 }
 
-void Player::enableMoving(MoveSide side) {
+void Player::setMoving(MoveSide side, bool enabled) {
 	switch (side) {
 	case MoveSide::left:
-		moving_vector_left.x = -panel_speed;
-		break;
+		moving_vector_left.x = -panel_speed * enabled;	// if !enabled -> equals to zero
+		break;											// else to panel speed
 
 	case MoveSide::right:
-		moving_vector_right.x = panel_speed;
-		break;
-	}
-}
-
-void Player::disableMoving(MoveSide side) {
-	switch (side) {
-	case MoveSide::left:
-		moving_vector_left.x = 0;
-		break;
-
-	case MoveSide::right:
-		moving_vector_right.x = 0;
+		moving_vector_right.x = panel_speed * enabled;
 		break;
 	}
 }
