@@ -2,7 +2,8 @@
 
 PingPong::PingPong() {
 	for (int i = 0; i < players.size(); i++) {
-		player_move[i] = MoveSide::hold;
+		player_move[i].first = false;
+		player_move[i].second = false;
 		players[i].getPanel().setSize(sf::Vector2f(panel_width, panel_height));
 		players[i].getPanel().setFillColor(sf::Color::White);
 	}
@@ -28,16 +29,18 @@ PingPong::PingPong() {
 
 void PingPong::update(float dt_time) {
 	for (int i = 0; i < players.size(); i++) {
-		switch (player_move[i]) {
-		case MoveSide::hold:
-			players[i].setMoving(sf::Vector2f(0, 0));
-			break;
-		case MoveSide::right:
-			players[i].setMoving(sf::Vector2f(800, 0));
-			break;
-		case MoveSide::left:
-			players[i].setMoving(sf::Vector2f(-800, 0));
-			break;
+		if (player_move[i].first) {	// left vector enabled
+			players[i].enableMoving(MoveSide::left);
+		}
+		else {						// left vector disabled
+			players[i].disableMoving(MoveSide::left);
+		}
+
+		if (player_move[i].second) {	// right vector enabled
+			players[i].enableMoving(MoveSide::right);
+		}
+		else {						// right vector disabled
+			players[i].disableMoving(MoveSide::right);
 		}
 	}
 
@@ -61,9 +64,16 @@ void PingPong::Run() {
 	}
 }
 
-void PingPong::setPlayerMove(MoveSide s, int id) {
+void PingPong::setPlayerMove(MoveSide side, bool is_enabled, int id) {
 	if (id < 0 && id > 2)
 		return;
 
-	player_move[id] = s;
+	switch (side) {
+	case MoveSide::left:
+		player_move[id].first = is_enabled;
+		break;
+	case MoveSide::right:
+		player_move[id].second = is_enabled;
+		break;
+	}
 }
