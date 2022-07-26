@@ -34,3 +34,7 @@ void Player::setMoving(MoveSide side, bool enabled) {
 void Player::setPosition(sf::Vector2f pos) {
 	panel.setPosition(pos);
 }
+
+sf::Vector2f Player::getMoving() {
+	return moving_vector_left + moving_vector_right;
+}

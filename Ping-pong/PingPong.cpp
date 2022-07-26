@@ -25,7 +25,7 @@ PingPong::PingPong() {
 	ball.getBall().setRadius(screen_width / 20);
 	ball.getBall().setFillColor(sf::Color::Green);
 	ball.setPosition(sf::Vector2f(screen_width / 2, screen_height / 2));
-	ball.setMoving(sf::Vector2f(-100, 0));
+	ball.setMoving(sf::Vector2f(200, -200));
 }
 
 void PingPong::update(float dt_time) {
@@ -42,13 +42,15 @@ void PingPong::update(float dt_time) {
 
 void PingPong::checkCollisions() {
 	// collisions checked only for the ball
-	if (circleVsRectangle(ball.getBall(), walls[0])) {
-		std::cout << "collided: wall[0]" << std::endl;
-		ball.setMoving(sf::Vector2f(400, 0));
+	// wall collision
+	if (circleVsRectangle(ball.getBall(), walls[0]) || 
+		circleVsRectangle(ball.getBall(), walls[1])) {
+		ball.setMoving(sf::Vector2f(-ball.getMoving().x, ball.getMoving().y));
 	}
-	else if (circleVsRectangle(ball.getBall(), walls[1])) {
-		std::cout << "collided: wall[1]" << std::endl;
-		ball.setMoving(sf::Vector2f(-400, 0));
+	else if (circleVsRectangle(ball.getBall(), players[0].getPanel()) ||
+		circleVsRectangle(ball.getBall(), players[1].getPanel())) {
+		ball.setMoving(sf::Vector2f(ball.getMoving().x, -ball.getMoving().y));
+
 	}
 	std::this_thread::sleep_for(std::chrono::milliseconds(8));
 }

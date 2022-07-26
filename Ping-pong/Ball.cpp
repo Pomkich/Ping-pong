@@ -22,3 +22,7 @@ void Ball::setMoving(sf::Vector2f moving) {
 void Ball::setPosition(sf::Vector2f pos) {
 	ball.setPosition(pos);
 }
+
+sf::Vector2f Ball::getMoving() {
+	return moving_vector;
+}
