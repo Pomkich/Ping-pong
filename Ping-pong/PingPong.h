@@ -25,4 +25,5 @@ public:
 private:
 	void update(float dt_time);	// warning: if delta time >> 0 so it can't be updated
 	void checkCollisions();
+	bool circleVsRectangle(sf::CircleShape& circle, sf::RectangleShape& rect);
 };

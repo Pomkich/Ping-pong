@@ -25,6 +25,7 @@ PingPong::PingPong() {
 	ball.getBall().setRadius(screen_width / 20);
 	ball.getBall().setFillColor(sf::Color::Green);
 	ball.setPosition(sf::Vector2f(screen_width / 2, screen_height / 2));
+	ball.setMoving(sf::Vector2f(-100, 0));
 }
 
 void PingPong::update(float dt_time) {
@@ -40,7 +41,15 @@ void PingPong::update(float dt_time) {
 }
 
 void PingPong::checkCollisions() {
-	// simulating a work...
+	// collisions checked only for the ball
+	if (circleVsRectangle(ball.getBall(), walls[0])) {
+		std::cout << "collided: wall[0]" << std::endl;
+		ball.setMoving(sf::Vector2f(400, 0));
+	}
+	else if (circleVsRectangle(ball.getBall(), walls[1])) {
+		std::cout << "collided: wall[1]" << std::endl;
+		ball.setMoving(sf::Vector2f(-400, 0));
+	}
 	std::this_thread::sleep_for(std::chrono::milliseconds(8));
 }
 
@@ -64,5 +73,29 @@ void PingPong::setPlayerMove(MoveSide side, bool is_enabled, int id) {
 	case MoveSide::right:
 		player_move[id].second = is_enabled;
 		break;
+	}
+}
+
+bool PingPong::circleVsRectangle(sf::CircleShape& circle, sf::RectangleShape& rect) {
+	// finding nearest point to circle of rectangle
+	double N_x = std::max(rect.getPosition().x,
+		std::min(rect.getPosition().x + rect.getSize().x,
+			circle.getPosition().x + circle.getRadius()));
+
+	double N_y = std::max(rect.getPosition().y,
+		std::min(rect.getPosition().y + rect.getSize().y,
+			circle.getPosition().y + circle.getRadius()));
+
+	double B_x = circle.getPosition().x + circle.getRadius();	// coordinates of center of circle
+	double B_y = circle.getPosition().y + circle.getRadius();
+	double dist_x = B_x - N_x;	// the result of subtracting two vectors
+	double dist_y = B_y - N_y;
+
+	// distance between circle center point and nearest point of rectangle
+	if (std::sqrt(dist_x * dist_x + dist_y * dist_y) <= circle.getRadius()) {
+		return true;
+	}
+	else {
+		return false;
 	}
 }
