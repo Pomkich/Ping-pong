@@ -93,8 +93,14 @@ bool PingPong::circleVsRectangle(sf::CircleShape& circle, sf::RectangleShape& re
 	double dist_x = B_x - N_x;	// the result of subtracting two vectors
 	double dist_y = B_y - N_y;
 
+	double dist = std::sqrt(dist_x * dist_x + dist_y * dist_y);
+
 	// distance between circle center point and nearest point of rectangle
-	if (std::sqrt(dist_x * dist_x + dist_y * dist_y) <= circle.getRadius()) {
+	if (dist <= circle.getRadius()) {
+		double overlap = dist / circle.getRadius();	// 
+		double offset_x = (dist_x / overlap) * (1 - overlap);
+		double offset_y = (dist_y / overlap) * (1 - overlap);
+		circle.setPosition(sf::Vector2f(circle.getPosition().x + offset_x, circle.getPosition().y + offset_y));
 		return true;
 	}
 	else {
