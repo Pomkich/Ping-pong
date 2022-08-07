@@ -2,8 +2,7 @@
 
 PingPong::PingPong() {
 	for (int i = 0; i < players.size(); i++) {
-		player_move[i].first = false;
-		player_move[i].second = false;
+		player_keys[i] = keys();
 		players[i].getPanel().setSize(sf::Vector2f(panel_width, panel_height));
 		players[i].getPanel().setFillColor(sf::Color::White);
 	}
@@ -30,8 +29,8 @@ PingPong::PingPong() {
 
 void PingPong::update(float dt_time) {
 	for (int i = 0; i < players.size(); i++) {
-		players[i].setMoving(MoveSide::left, player_move[i].first);
-		players[i].setMoving(MoveSide::right, player_move[i].second);
+		players[i].setMoving(PressedKey::left, player_keys[i].left);
+		players[i].setMoving(PressedKey::right, player_keys[i].right);
 	}
 
 	for (int i = 0; i < players.size(); i++) {
@@ -64,16 +63,20 @@ void PingPong::Run() {
 	}
 }
 
-void PingPong::setPlayerMove(MoveSide side, bool is_enabled, int id) {
+void PingPong::notifyKeyPress(PressedKey key, bool is_enabled, int id) {
 	if (id < 0 && id > 2)
 		return;
 
-	switch (side) {
-	case MoveSide::left:
-		player_move[id].first = is_enabled;
+	switch (key) {
+	case PressedKey::left:
+		player_keys[id].left = is_enabled;
 		break;
-	case MoveSide::right:
-		player_move[id].second = is_enabled;
+	case PressedKey::right:
+		player_keys[id].right = is_enabled;
+		break;
+	case PressedKey::space:
+		std::cout << "space pressed" << std::endl;
+		player_keys[id].space = is_enabled;
 		break;
 	}
 }

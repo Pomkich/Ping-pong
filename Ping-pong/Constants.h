@@ -1,7 +1,7 @@
 #pragma once
 
-enum class MoveSide {
-	left, right
+enum class PressedKey {
+	left, right, space
 };
 
 const int screen_width = 800;

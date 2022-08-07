@@ -19,13 +19,13 @@ sf::RectangleShape& Player::getPanel() {
 	return panel;
 }
 
-void Player::setMoving(MoveSide side, bool enabled) {
+void Player::setMoving(PressedKey side, bool enabled) {
 	switch (side) {
-	case MoveSide::left:
+	case PressedKey::left:
 		moving_vector_left.x = -panel_speed * enabled;	// if !enabled -> equals to zero
 		break;											// else to panel speed
 
-	case MoveSide::right:
+	case PressedKey::right:
 		moving_vector_right.x = panel_speed * enabled;
 		break;
 	}
