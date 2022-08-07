@@ -34,6 +34,9 @@ int main() {
                     pong.notifyKeyPress(PressedKey::right, true, 0);
                     break;
                 case sf::Keyboard::Space:
+                    pong.notifyKeyPress(PressedKey::space, true, 1);
+                    break;
+                case sf::Keyboard::W:
                     pong.notifyKeyPress(PressedKey::space, true, 0);
                     break;
                 }
@@ -53,6 +56,9 @@ int main() {
                     pong.notifyKeyPress(PressedKey::right, false, 0);
                     break;
                 case sf::Keyboard::Space:
+                    pong.notifyKeyPress(PressedKey::space, false, 1);
+                    break;
+                case sf::Keyboard::W:
                     pong.notifyKeyPress(PressedKey::space, false, 0);
                     break;
                 }
