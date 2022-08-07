@@ -66,6 +66,8 @@ int main() {
         window.draw(pong.ball.getBall());
         window.draw(pong.walls[0]);
         window.draw(pong.walls[1]);
+        window.draw(pong.lose_bounds[0]);
+        window.draw(pong.lose_bounds[1]);
         window.display();
         //this_thread::sleep_for(std::chrono::milliseconds(16));
     }

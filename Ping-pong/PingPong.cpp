@@ -19,6 +19,16 @@ PingPong::PingPong() {
 	walls[1].setPosition(screen_width - 1, 0);
 	walls[1].setSize(sf::Vector2f(1, screen_height));
 
+	// up bound
+	lose_bounds[0].setPosition(0, 0);
+	lose_bounds[0].setSize(sf::Vector2f(screen_width, 5));	// 5 pixels - offset
+	lose_bounds[0].setFillColor(sf::Color::Red);
+
+	// bottom bound
+	lose_bounds[1].setPosition(0, screen_height - 5);
+	lose_bounds[1].setSize(sf::Vector2f(screen_width, 5));
+	lose_bounds[1].setFillColor(sf::Color::Red);
+
 	// setting up a ball
 	ball.getBall().setRadius(screen_width / 20);
 	ball.getBall().setFillColor(sf::Color::Green);
@@ -93,7 +103,8 @@ bool PingPong::circleVsRectangle(sf::CircleShape& circle, sf::RectangleShape& re
 
 	// distance between circle center point and nearest point of rectangle
 	if (dist <= circle.getRadius()) {
-		double overlap = dist / circle.getRadius();	// 
+		double overlap = dist / circle.getRadius();
+		// dist_x / overlap - to get original distance
 		double offset_x = (dist_x / overlap) * (1 - overlap);
 		double offset_y = (dist_y / overlap) * (1 - overlap);
 		circle.setPosition(sf::Vector2f(circle.getPosition().x + offset_x, circle.getPosition().y + offset_y));

@@ -12,6 +12,7 @@ public:
 //private:
 	std::array<Player, 2> players;
 	std::array<sf::RectangleShape, 2> walls;
+	std::array<sf::RectangleShape, 2> lose_bounds;
 	Ball ball;
 	sf::Clock clock;
 
