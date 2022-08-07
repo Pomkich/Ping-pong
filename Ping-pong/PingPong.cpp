@@ -6,9 +6,9 @@ PingPong::PingPong() {
 		players[i].getPanel().setFillColor(sf::Color::White);
 	}
 	// center player's panels
-	players[0].setPosition(
-		sf::Vector2f((screen_width - panel_width) / 2, panel_height));
 	players[1].setPosition(
+		sf::Vector2f((screen_width - panel_width) / 2, panel_height));
+	players[0].setPosition(
 		sf::Vector2f((screen_width - panel_width) / 2, screen_height - panel_height * 2));
 
 	// placing walls and setting it's size
@@ -53,7 +53,12 @@ void PingPong::checkCollisions() {
 	else if (circleVsRectangle(ball.getBall(), players[0].getPanel()) ||
 		circleVsRectangle(ball.getBall(), players[1].getPanel())) {
 		ball.setMoving(sf::Vector2f(ball.getMoving().x, -ball.getMoving().y));
-
+	}
+	else if (circleVsRectangle(ball.getBall(), lose_bounds[0])) {
+		std::cout << "up player lose" << std::endl;
+	}
+	else if (circleVsRectangle(ball.getBall(), lose_bounds[1])) {
+		std::cout << "bottom player lose" << std::endl;
 	}
 	std::this_thread::sleep_for(std::chrono::milliseconds(8));
 }
