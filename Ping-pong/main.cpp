@@ -22,35 +22,41 @@ int main() {
             else if (event.type == sf::Event::KeyPressed) {
                 switch (event.key.code) {
                 case sf::Keyboard::Left:
-                    pong.notifyKeyPress(PressedKey::left, 1, 1);
+                    pong.notifyKeyPress(PressedKey::left, true, 1);
                     break;
                 case sf::Keyboard::Right:
-                    pong.notifyKeyPress(PressedKey::right, 1, 1);
+                    pong.notifyKeyPress(PressedKey::right, true, 1);
                     break;
                 case sf::Keyboard::A:
-                    pong.notifyKeyPress(PressedKey::left, 1, 0);
+                    pong.notifyKeyPress(PressedKey::left, true, 0);
                     break;
                 case sf::Keyboard::D:
-                    pong.notifyKeyPress(PressedKey::right, 1, 0);
+                    pong.notifyKeyPress(PressedKey::right, true, 0);
                     break;
                 case sf::Keyboard::Space:
-                    pong.notifyKeyPress(PressedKey::space, 1, 0);
+                    pong.notifyKeyPress(PressedKey::space, true, 0);
                     break;
                 }
             }
             else if (event.type == sf::Event::KeyReleased) {
-                if (event.key.code == sf::Keyboard::Left) {
-                    pong.notifyKeyPress(PressedKey::left, 0, 1);
+                switch (event.key.code) {
+                case sf::Keyboard::Left:
+                    pong.notifyKeyPress(PressedKey::left, false, 1);
+                    break;
+                case sf::Keyboard::Right:
+                    pong.notifyKeyPress(PressedKey::right, false, 1);
+                    break;
+                case sf::Keyboard::A:
+                    pong.notifyKeyPress(PressedKey::left, false, 0);
+                    break;
+                case sf::Keyboard::D:
+                    pong.notifyKeyPress(PressedKey::right, false, 0);
+                    break;
+                case sf::Keyboard::Space:
+                    pong.notifyKeyPress(PressedKey::space, false, 0);
+                    break;
                 }
-                else if (event.key.code == sf::Keyboard::Right) {
-                    pong.notifyKeyPress(PressedKey::right, 0, 1);
-                }
-                else if (event.key.code == sf::Keyboard::A) {
-                    pong.notifyKeyPress(PressedKey::left, 0, 0);
-                }
-                else if (event.key.code == sf::Keyboard::D) {
-                    pong.notifyKeyPress(PressedKey::right, 0, 0);
-                }
+                
             }
         }
 

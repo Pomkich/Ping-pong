@@ -10,15 +10,6 @@
 class PingPong {
 public:
 //private:
-	struct keys {
-		bool left;
-		bool right;
-		bool space;
-
-		keys() : left(false), right(false), space(false) {}
-	};
-
-	keys player_keys[2]; 
 	std::array<Player, 2> players;
 	std::array<sf::RectangleShape, 2> walls;
 	Ball ball;

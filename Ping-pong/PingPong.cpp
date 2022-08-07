@@ -2,7 +2,6 @@
 
 PingPong::PingPong() {
 	for (int i = 0; i < players.size(); i++) {
-		player_keys[i] = keys();
 		players[i].getPanel().setSize(sf::Vector2f(panel_width, panel_height));
 		players[i].getPanel().setFillColor(sf::Color::White);
 	}
@@ -28,11 +27,6 @@ PingPong::PingPong() {
 }
 
 void PingPong::update(float dt_time) {
-	for (int i = 0; i < players.size(); i++) {
-		players[i].setMoving(PressedKey::left, player_keys[i].left);
-		players[i].setMoving(PressedKey::right, player_keys[i].right);
-	}
-
 	for (int i = 0; i < players.size(); i++) {
 		players[i].update(dt_time);
 	}
@@ -69,14 +63,13 @@ void PingPong::notifyKeyPress(PressedKey key, bool is_enabled, int id) {
 
 	switch (key) {
 	case PressedKey::left:
-		player_keys[id].left = is_enabled;
+		players[id].setMoving(PressedKey::left, is_enabled);
 		break;
 	case PressedKey::right:
-		player_keys[id].right = is_enabled;
+		players[id].setMoving(PressedKey::right, is_enabled);
 		break;
 	case PressedKey::space:
-		std::cout << "space pressed" << std::endl;
-		player_keys[id].space = is_enabled;
+		std::cout << "space status: " << is_enabled << std::endl;
 		break;
 	}
 }
