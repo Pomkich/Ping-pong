@@ -4,11 +4,15 @@ PingPong::PingPong() {
 	for (int i = 0; i < players.size(); i++) {
 		players[i].getPanel().setSize(sf::Vector2f(panel_width, panel_height));
 		players[i].getPanel().setFillColor(sf::Color::White);
+		player_score[i] = 0;
 	}
+	lost_player_id = side_bot;		
+	game_state = GameState::prestart;
+
 	// center player's panels
-	players[1].setPosition(
+	players[side_bot].setPosition(
 		sf::Vector2f((screen_width - panel_width) / 2, panel_height));
-	players[0].setPosition(
+	players[side_up].setPosition(
 		sf::Vector2f((screen_width - panel_width) / 2, screen_height - panel_height * 2));
 
 	// placing walls and setting it's size
@@ -20,14 +24,14 @@ PingPong::PingPong() {
 	walls[1].setSize(sf::Vector2f(1, screen_height));
 
 	// up bound
-	lose_bounds[0].setPosition(0, 0);
-	lose_bounds[0].setSize(sf::Vector2f(screen_width, 5));	// 5 pixels - offset
-	lose_bounds[0].setFillColor(sf::Color::Red);
+	lose_bounds[side_up].setPosition(0, 0);
+	lose_bounds[side_up].setSize(sf::Vector2f(screen_width, 5));	// 5 pixels - offset
+	lose_bounds[side_up].setFillColor(sf::Color::Red);
 
 	// bottom bound
-	lose_bounds[1].setPosition(0, screen_height - 5);
-	lose_bounds[1].setSize(sf::Vector2f(screen_width, 5));
-	lose_bounds[1].setFillColor(sf::Color::Red);
+	lose_bounds[side_bot].setPosition(0, screen_height - 5);
+	lose_bounds[side_bot].setSize(sf::Vector2f(screen_width, 5));
+	lose_bounds[side_bot].setFillColor(sf::Color::Red);
 
 	// setting up a ball
 	ball.getBall().setRadius(screen_width / 20);
@@ -40,7 +44,17 @@ void PingPong::update(float dt_time) {
 	for (int i = 0; i < players.size(); i++) {
 		players[i].update(dt_time);
 	}
-	ball.update(dt_time);
+	auto panel = players[lost_player_id].getPanel();
+	switch (game_state) {
+	case GameState::prestart:
+		ball.setPosition(sf::Vector2f(panel.getPosition().x + panel_width / 4, 
+			panel.getPosition().y + ball.getBall().getRadius() + 1));	// + 1 to off collision
+		break;
+
+	case GameState::running:
+		ball.update(dt_time);
+		break;
+	}
 }
 
 void PingPong::checkCollisions() {
@@ -52,6 +66,7 @@ void PingPong::checkCollisions() {
 	}
 	else if (circleVsRectangle(ball.getBall(), players[0].getPanel()) ||
 		circleVsRectangle(ball.getBall(), players[1].getPanel())) {
+		std::cout << "detected" << std::endl;
 		ball.setMoving(sf::Vector2f(ball.getMoving().x, -ball.getMoving().y));
 	}
 	else if (circleVsRectangle(ball.getBall(), lose_bounds[0])) {
@@ -84,6 +99,7 @@ void PingPong::notifyKeyPress(PressedKey key, bool is_enabled, int id) {
 		players[id].setMoving(PressedKey::right, is_enabled);
 		break;
 	case PressedKey::space:
+		//if ()
 		std::cout << "space status: " << is_enabled << std::endl;
 		break;
 	}
