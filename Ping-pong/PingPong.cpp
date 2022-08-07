@@ -4,7 +4,7 @@ PingPong::PingPong() {
 	for (int i = 0; i < players.size(); i++) {
 		players[i].getPanel().setSize(sf::Vector2f(panel_width, panel_height));
 		players[i].getPanel().setFillColor(sf::Color::White);
-		player_score[i] = 0;
+		//player_score[i] = 0;
 	}
 	lost_player_id = side_up;		
 	game_state = GameState::prestart;
@@ -37,7 +37,7 @@ PingPong::PingPong() {
 	ball.getBall().setRadius(screen_width / 20);
 	ball.getBall().setFillColor(sf::Color::Green);
 	ball.setPosition(sf::Vector2f(screen_width / 2, screen_height / 2));
-	ball.setMoving(sf::Vector2f(200, -200));
+	ball.setMoving(sf::Vector2f(start_ball_speed, -start_ball_speed));
 }
 
 void PingPong::update(float dt_time) {
@@ -73,9 +73,13 @@ void PingPong::checkCollisions() {
 	}
 	else if (circleVsRectangle(ball.getBall(), lose_bounds[side_up])) {
 		std::cout << "up player lose" << std::endl;
+		lost_player_id = side_up;
+		game_state = GameState::prestart;
 	}
 	else if (circleVsRectangle(ball.getBall(), lose_bounds[side_bot])) {
 		std::cout << "bottom player lose" << std::endl;
+		lost_player_id = side_bot;
+		game_state = GameState::prestart;
 	}
 	std::this_thread::sleep_for(std::chrono::milliseconds(8));
 }

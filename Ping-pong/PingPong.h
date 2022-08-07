@@ -12,7 +12,7 @@ public:
 //private:
 	GameState game_state;
 	std::array<Player, 2> players;
-	std::array<int, 2> player_score;
+	//std::array<int, 2> player_score;
 	std::array<sf::RectangleShape, 2> walls;
 	std::array<sf::RectangleShape, 2> lose_bounds;
 	Ball ball;
