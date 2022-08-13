@@ -135,12 +135,15 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PingPong.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Client.h" />
     <ClInclude Include="PingPong.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PongObserver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

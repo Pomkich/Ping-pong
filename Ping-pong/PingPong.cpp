@@ -48,7 +48,8 @@ void PingPong::update(float dt_time) {
 	auto panel = players[lost_player_id].getPanel();	// + 1 to off collision
 	double y_offset = (lost_player_id == side_up) ? panel_height + 1 : -ball.getBall().getRadius() * 2 - 1;
 	switch (game_state) {
-	case GameState::prestart:
+	case GameState::prestart:	
+		// follow lost player
 		ball.setPosition(sf::Vector2f(panel.getPosition().x + panel_width / 4, 
 			panel.getPosition().y + y_offset));
 		break;
