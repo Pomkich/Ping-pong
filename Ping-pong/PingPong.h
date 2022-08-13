@@ -6,10 +6,10 @@
 #include "Player.h"
 #include "Constants.h"
 #include <iostream>
+#include "PongObserver.h"
 
 class PingPong {
-public:
-//private:
+private:
 	GameState game_state;
 	std::array<Player, 2> players;
 	std::array<sf::RectangleShape, 2> walls;
@@ -18,8 +18,10 @@ public:
 	sf::Clock clock;
 	int lost_player_id;	// if player lost in last round then he gets ball
 
+	std::shared_ptr<PongObserver> observer;
+
 public:
-	PingPong();
+	PingPong(std::shared_ptr<PongObserver> obs);
 	void Run();
 
 	void notifyKeyPress(PressedKey key, bool is_enabled, int id);

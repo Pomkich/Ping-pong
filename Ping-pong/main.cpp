@@ -7,8 +7,9 @@
 using namespace std;
 
 int main() {
-	Client clt;
-	clt.Run();
+	std::shared_ptr<Client> clt = std::make_shared<Client>();
+	clt->Initialize();
+	clt->Run();
 
 	return 0;
 }

@@ -6,7 +6,7 @@
 #include "PingPong.h"
 #include <thread>
 
-class Client : public PongObserver {
+class Client : public PongObserver, public std::enable_shared_from_this<Client> {
 private:
 	sf::RenderWindow window;
 	sf::RectangleShape player;
@@ -23,5 +23,6 @@ private:
 public:
 	Client();
 	void Run();
+	void Initialize();
 	virtual void sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_x, int p2_y) override;
 };

@@ -2,7 +2,6 @@
 
 Client::Client() {
 	window.create(sf::VideoMode(screen_width, screen_height), "SFML works!");
-	ping_pong = std::make_shared<PingPong>();
 
 	// setting up graphics
 	player.setSize(sf::Vector2f(panel_width, panel_height));
@@ -60,6 +59,10 @@ void Client::Run() {
 		HandleInput();
 		Render();
 	}
+}
+
+void Client::Initialize() {
+    ping_pong = std::make_shared<PingPong>(shared_from_this());
 }
 
 void Client::HandleInput() {
