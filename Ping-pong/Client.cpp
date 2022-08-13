@@ -54,7 +54,7 @@ void Client::Render() {
 
 void Client::Run() {
 	std::thread game_thread = std::thread(&PingPong::Run, &(*ping_pong));
-	game_thread.join();
+	game_thread.detach();
 
 	while (window.isOpen()) {
 		HandleInput();
