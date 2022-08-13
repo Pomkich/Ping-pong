@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include "Constants.h"
+#include "PingPong.h"
+#include <thread>
 
 class Client : public PongObserver {
 private:
@@ -10,6 +12,7 @@ private:
 	sf::RectangleShape player;
 	sf::RectangleShape enemy;
 	sf::CircleShape ball;
+	std::shared_ptr<PingPong> ping_pong;
 
 	std::array<sf::RectangleShape, 2> walls;
 	std::array<sf::RectangleShape, 2> lose_bounds;

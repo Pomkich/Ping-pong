@@ -1,6 +1,9 @@
 #include "Client.h"
 
 Client::Client() {
+	window.create(sf::VideoMode(screen_width, screen_height), "SFML works!");
+	ping_pong = std::make_shared<PingPong>();
+
 	// setting up graphics
 	player.setSize(sf::Vector2f(panel_width, panel_height));
 	player.setFillColor(sf::Color::White);
@@ -36,11 +39,78 @@ void Client::sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_
 }
 
 void Client::Render() {
+    window.clear();
+
 	window.draw(player);
 	window.draw(enemy);
 	window.draw(ball);
+	window.draw(walls[0]);
+	window.draw(walls[1]);
+	window.draw(lose_bounds[0]);
+	window.draw(lose_bounds[1]);
+
+    window.display();
+}
+
+void Client::Run() {
+	std::thread game_thread = std::thread(&PingPong::Run, &(*ping_pong));
+	game_thread.join();
+
+	while (window.isOpen()) {
+		HandleInput();
+		Render();
+	}
 }
 
 void Client::HandleInput() {
-	
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed)
+            window.close();
+        else if (event.type == sf::Event::KeyPressed) {
+            switch (event.key.code) {
+            case sf::Keyboard::Left:
+                ping_pong->notifyKeyPress(PressedKey::left, true, 1);
+                break;
+            case sf::Keyboard::Right:
+                ping_pong->notifyKeyPress(PressedKey::right, true, 1);
+                break;
+            case sf::Keyboard::A:
+                ping_pong->notifyKeyPress(PressedKey::left, true, 0);
+                break;
+            case sf::Keyboard::D:
+                ping_pong->notifyKeyPress(PressedKey::right, true, 0);
+                break;
+            case sf::Keyboard::Space:
+                ping_pong->notifyKeyPress(PressedKey::space, true, 1);
+                break;
+            case sf::Keyboard::W:
+                ping_pong->notifyKeyPress(PressedKey::space, true, 0);
+                break;
+            }
+        }
+        else if (event.type == sf::Event::KeyReleased) {
+            switch (event.key.code) {
+            case sf::Keyboard::Left:
+                ping_pong->notifyKeyPress(PressedKey::left, false, 1);
+                break;
+            case sf::Keyboard::Right:
+                ping_pong->notifyKeyPress(PressedKey::right, false, 1);
+                break;
+            case sf::Keyboard::A:
+                ping_pong->notifyKeyPress(PressedKey::left, false, 0);
+                break;
+            case sf::Keyboard::D:
+                ping_pong->notifyKeyPress(PressedKey::right, false, 0);
+                break;
+            case sf::Keyboard::Space:
+                ping_pong->notifyKeyPress(PressedKey::space, false, 1);
+                break;
+            case sf::Keyboard::W:
+                ping_pong->notifyKeyPress(PressedKey::space, false, 0);
+                break;
+            }
+        }
+    }
 }
