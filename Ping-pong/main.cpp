@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "PingPong.h"
 #include <thread>
+#include "Client.h"
 
 using namespace std;
 
