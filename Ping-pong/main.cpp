@@ -9,7 +9,10 @@
 using namespace std;
 
 void connect() {
-	char data[8] = "hello w";
+	sf::Packet packet;
+	std::string message = "hello world asd";
+	packet << message;
+
 	sf::TcpSocket socket;
 	sf::Socket::Status status = socket.connect("127.0.0.1", 57000);
 	if (status != sf::Socket::Done)
@@ -22,7 +25,7 @@ void connect() {
 	}
 	this_thread::sleep_for(std::chrono::seconds(2));
 	while (true) {
-		if (socket.send(data, 8) != sf::Socket::Done) {
+		if (socket.send(packet) != sf::Socket::Done) {
 
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));

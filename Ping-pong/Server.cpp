@@ -2,8 +2,6 @@
 
 Server::Server() {
 	ready = false;
-	memset(message_p_1, 0x0, 32);
-	memset(message_p_2, 0x0, 32);
 }
 
 void Server::AcceptConnections() {
@@ -51,17 +49,21 @@ void Server::Run() {
 	size_t received_1 = 0;
 	size_t received_2 = 0;
 	while (true) {
-		if (player_1.receive(message_p_1, 8, received_1) != sf::Socket::Done) {
+		if (player_1.receive(message_p_1) != sf::Socket::Done) {
 			//std::cout << "can't receive from player_1" << std::endl;
 		}
 		else {
-			std::cout << "message player 1: " << message_p_1 << std::endl;
+			std::string message;
+			message_p_1 >> message;
+			std::cout << "message player 1: " << message << std::endl;
 		}
-		if (player_2.receive(message_p_2, 8, received_2) != sf::Socket::Done) {
+		if (player_2.receive(message_p_2) != sf::Socket::Done) {
 			//std::cout << "can't receive from player_2" << std::endl;
 		}
 		else {
-			std::cout << "message player 2: " << message_p_2 << std::endl;
+			std::string message;
+			message_p_2 >> message;
+			std::cout << "message player 2: " << message << std::endl;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	}

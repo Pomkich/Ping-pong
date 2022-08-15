@@ -11,8 +11,8 @@ private:
 	sf::TcpListener listener;
 	sf::TcpSocket player_1;
 	sf::TcpSocket player_2;
-	char message_p_1[8];
-	char message_p_2[8];
+	sf::Packet message_p_1;
+	sf::Packet message_p_2;
 
 public:
 	Server();
