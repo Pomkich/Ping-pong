@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NetClient.cpp" />
     <ClCompile Include="PingPong.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Client.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="NetClient.h" />
     <ClInclude Include="PingPong.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PongObserver.h" />

@@ -5,10 +5,11 @@
 #include "Client.h"
 #include <SFML/Network.hpp>
 #include "Server.h"
+#include "NetClient.h"
 
 using namespace std;
 
-void connect() {
+/*void connect() {
 	sf::Packet packet;
 	std::string message = "hello world asd";
 	packet << message;
@@ -30,17 +31,34 @@ void connect() {
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	}
-}
+}*/
 
 int main() {
-	thread thr1(connect);
-	thr1.detach();
-
-	thread thr2(connect);
-	thr2.detach();
+	NetClient c1;
+	std::thread connection_1(&NetClient::Connect, &c1, "127.0.0.1", 57000);
+	connection_1.detach();
+	//c1.Connect("127.0.0.1", 57000);
+	
+	NetClient c2;
+	std::thread connection_2(&NetClient::Connect, &c2, "127.0.0.1", 57000);
+	connection_2.detach();
+	//c2.Connect("127.0.0.1", 57000);
 
 	Server server;
-	server.Run();
+	std::thread listen(&Server::Run, &server);
+	listen.detach();
+
+	std::this_thread::sleep_for(std::chrono::seconds(3));
+
+	sf::Packet data_packet;
+	std::string message = "hello 123";
+	data_packet << message;
+	c1.Write(data_packet);
+
+	data_packet.clear();
+	message = "bye 321";
+	data_packet << message;
+	c2.Write(data_packet);
 
 
 	/*sf::TcpListener listener;
@@ -80,6 +98,8 @@ int main() {
 	//std::shared_ptr<Client> clt = std::make_shared<Client>();
 	//clt->Initialize();
 	//clt->Run();
+
+	std::this_thread::sleep_for(std::chrono::seconds(30));
 
 	return 0;
 }
