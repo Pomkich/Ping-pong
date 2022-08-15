@@ -136,6 +136,7 @@
     <ClCompile Include="PingPong.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="PingPong.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PongObserver.h" />
+    <ClInclude Include="Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
