@@ -65,14 +65,24 @@ int main() {
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 
 	data_packet.clear();
-	message = "hello 123";
+	message = "-disconnect";
 	data_packet << message;
 	c1.Write(data_packet);
 
 	data_packet.clear();
-	message = "bye 321";
+	message = "-disconnect";
 	data_packet << message;
 	c2.Write(data_packet);
+
+	this_thread::sleep_for(std::chrono::seconds(1));
+
+	NetClient c3;
+	std::thread connection_3(&NetClient::Connect, &c3, "127.0.0.1", 57000);
+	connection_3.detach();
+
+	NetClient c4;
+	std::thread connection_4(&NetClient::Connect, &c4, "127.0.0.1", 57000);
+	connection_4.detach();
 
 
 	/*sf::TcpListener listener;
