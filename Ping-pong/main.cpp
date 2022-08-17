@@ -44,6 +44,10 @@ int main() {
 	connection_2.detach();
 	//c2.Connect("127.0.0.1", 57000);
 
+	NetClient c3;
+	std::thread connection_3(&NetClient::Connect, &c3, "127.0.0.1", 57000);
+	connection_3.detach();
+
 	Server server;
 	std::thread listen(&Server::Run, &server);
 	listen.detach();
