@@ -44,10 +44,6 @@ int main() {
 	connection_2.detach();
 	//c2.Connect("127.0.0.1", 57000);
 
-	NetClient c3;
-	std::thread connection_3(&NetClient::Connect, &c3, "127.0.0.1", 57000);
-	connection_3.detach();
-
 	Server server;
 	std::thread listen(&Server::Run, &server);
 	listen.detach();
@@ -56,6 +52,20 @@ int main() {
 
 	sf::Packet data_packet;
 	std::string message = "hello 123";
+	data_packet << message;
+	c1.Write(data_packet);
+
+	//std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	data_packet.clear();
+	message = "bye 321";
+	data_packet << message;
+	c2.Write(data_packet);
+
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+
+	data_packet.clear();
+	message = "hello 123";
 	data_packet << message;
 	c1.Write(data_packet);
 

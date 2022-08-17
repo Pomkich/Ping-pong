@@ -21,10 +21,12 @@ void Server::AcceptConnections() {
 			std::unique_lock<std::mutex> lock(mut);
 			// move pointer to any player
 			if (player_1 == nullptr) {
+				std::cout << "player 1 set" << std::endl;
 				player_1 = std::move(temp_socket);
 				player_1->setBlocking(false);
 			}
 			else if (player_2 == nullptr) {
+				std::cout << "player 2 set" << std::endl;
 				player_2 = std::move(temp_socket);
 				player_2->setBlocking(false);
 			}
@@ -37,18 +39,17 @@ void Server::AcceptConnections() {
 				temp_socket = std::make_unique<sf::TcpSocket>();
 
 				// if both player connected -> can start game
-				if (player_1 != nullptr && player_2 != nullptr) {
+				lock.lock();
+				if (player_1 != nullptr && player_2 != nullptr)
 					OnReady();
-				}
+				lock.unlock();
 			}
 			else {	// else lobby is full
 				// if it case calls, then game will not run anyway or already running
-				lock.lock();
 				sf::Packet temp_packet;
 				std::string err_message = "this lobby don't have slots";
 				temp_packet << err_message;
 				temp_socket->send(temp_packet);
-				lock.unlock();
 			}
 		}
 	}
@@ -58,26 +59,22 @@ void Server::Run() {
 	listener_thread = std::move(std::thread(&Server::AcceptConnections, &(*this)));
 	listener_thread.detach();
 
+	std::string message;
+
 	while (true) {
 		std::unique_lock<std::mutex> lock(mut);
 
 		if (player_1 != nullptr && 
-			player_1->receive(message_p_1) != sf::Socket::Done) {
-			//std::cout << "can't receive from player_1" << std::endl;
-		}
-		else {
-			std::string message;
+			player_1->receive(message_p_1) == sf::Socket::Done) {
 			message_p_1 >> message;
 			std::cout << "message player 1: " << message << std::endl;
+			message.clear();
 		}
 		if (player_2 != nullptr && 
-			player_2->receive(message_p_2) != sf::Socket::Done) {
-			//std::cout << "can't receive from player_2" << std::endl;
-		}
-		else {
-			std::string message;
+			player_2->receive(message_p_2) == sf::Socket::Done) {
 			message_p_2 >> message;
 			std::cout << "message player 2: " << message << std::endl;
+			message.clear();
 		}
 		lock.unlock();
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
