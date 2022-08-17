@@ -5,36 +5,48 @@ Server::Server() {
 }
 
 void Server::AcceptConnections() {
-	bool p_1_connected = false;
-	bool p_2_connected = false;
+	std::unique_ptr<sf::TcpSocket> temp_socket = std::make_unique<sf::TcpSocket>();
 
-	if (listener.listen(57000) != sf::Socket::Done) {
+	if (listener.listen(57000) != sf::Socket::Done)
 		std::cout << "can't listen" << std::endl;
-	}
-	else {
-		std::cout << "starting listen..." << std::endl;
-	}
+	else std::cout << "starting listen" << std::endl;
 
-	if (listener.accept(player_1) != sf::Socket::Done) {
-		std::cout << "player_1 can't connect" << std::endl;
-	}
-	else {
-		std::cout << "player_1 connected" << std::endl;
-		p_1_connected = true;
-	}
-	if (listener.accept(player_2) != sf::Socket::Done) {
-		std::cout << "player_2 can't connect" << std::endl;
-	}
-	else {
-		std::cout << "player_2 connected" << std::endl;
-		p_2_connected = true;
-	}
+	// this thread only accept new connections
+	// and rejects them, if lobby is full
+	while (true) {
+		if (listener.accept(*temp_socket) != sf::Socket::Done) {
+			std::cout << "connection error" << std::endl;
+		}
+		else {
+			// move pointer to any player
+			if (player_1 == nullptr) {
+				player_1 = std::move(temp_socket);
+				player_1->setBlocking(false);
+			}
+			else if (player_2 == nullptr) {
+				player_2 = std::move(temp_socket);
+				player_2->setBlocking(false);
+			}
 
-	if (p_1_connected && p_2_connected) {
-		std::cout << "both players connected" << std::endl;
-		player_1.setBlocking(false);	// sockets will be checked every 16 milliseconds in cycle
-		player_2.setBlocking(false);
-		ready = true;
+			// if nullptr -> pointer moved to any player
+			// need to create new socket for listening
+			if (!temp_socket) {
+				temp_socket.reset();
+				temp_socket = std::make_unique<sf::TcpSocket>();
+			}
+			else {
+				sf::Packet temp_packet;
+				std::string err_message = "this lobby don't have slots";
+				temp_packet << err_message;
+				temp_socket->send(temp_packet);
+			}
+
+			if (player_1 != nullptr && player_2 != nullptr) {
+				ready = true;
+				listener.close();
+				return;
+			}
+		}
 	}
 }
 
@@ -46,10 +58,8 @@ void Server::Run() {
 		return;
 	}
 
-	size_t received_1 = 0;
-	size_t received_2 = 0;
 	while (true) {
-		if (player_1.receive(message_p_1) != sf::Socket::Done) {
+		if (player_1->receive(message_p_1) != sf::Socket::Done) {
 			//std::cout << "can't receive from player_1" << std::endl;
 		}
 		else {
@@ -57,7 +67,7 @@ void Server::Run() {
 			message_p_1 >> message;
 			std::cout << "message player 1: " << message << std::endl;
 		}
-		if (player_2.receive(message_p_2) != sf::Socket::Done) {
+		if (player_2->receive(message_p_2) != sf::Socket::Done) {
 			//std::cout << "can't receive from player_2" << std::endl;
 		}
 		else {

@@ -9,8 +9,8 @@ private:
 	bool ready;
 
 	sf::TcpListener listener;
-	sf::TcpSocket player_1;
-	sf::TcpSocket player_2;
+	std::unique_ptr<sf::TcpSocket> player_1;
+	std::unique_ptr<sf::TcpSocket> player_2;
 	sf::Packet message_p_1;
 	sf::Packet message_p_2;
 
