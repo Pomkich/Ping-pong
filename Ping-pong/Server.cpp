@@ -64,24 +64,26 @@ void Server::Run() {
 	while (true) {
 		std::unique_lock<std::mutex> lock(mut);
 
-		if (player_1 != nullptr && 
-			player_1->receive(message_p_1) == sf::Socket::Done) {
-			message_p_1 >> message;
-			std::cout << "message player 1: " << message << std::endl;
-
-			if (message == "-disconnect") {
+		if (player_1 != nullptr) {
+			sf::Socket::Status status = player_1->receive(message_p_1);
+			if (status == sf::Socket::Done) {
+				message_p_1 >> message;
+				std::cout << "message player 1: " << message << std::endl;
+			}
+			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 1" << std::endl;
 				player_1->disconnect();
 				player_1.reset();
 			}
 			message.clear();
 		}
-		if (player_2 != nullptr && 
-			player_2->receive(message_p_2) == sf::Socket::Done) {
-			message_p_2 >> message;
-			std::cout << "message player 2: " << message << std::endl;
-
-			if (message == "-disconnect") {
+		if (player_2 != nullptr) {
+			sf::Socket::Status status = player_2->receive(message_p_2);
+			if (status == sf::Socket::Done) {
+				message_p_2 >> message;
+				std::cout << "message player 2: " << message << std::endl;
+			}
+			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 2" << std::endl;
 				player_2->disconnect();
 				player_2.reset();

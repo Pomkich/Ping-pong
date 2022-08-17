@@ -50,7 +50,15 @@ int main() {
 
 	std::this_thread::sleep_for(std::chrono::seconds(3));
 
-	sf::Packet data_packet;
+	c1.Disconnect();
+	c2.Disconnect();
+
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+
+	connection_2 = std::move(std::thread(&NetClient::Connect, &c2, "127.0.0.1", 57000));
+	connection_2.detach();
+
+	/*sf::Packet data_packet;
 	std::string message = "hello 123";
 	data_packet << message;
 	c1.Write(data_packet);
@@ -82,7 +90,7 @@ int main() {
 
 	NetClient c4;
 	std::thread connection_4(&NetClient::Connect, &c4, "127.0.0.1", 57000);
-	connection_4.detach();
+	connection_4.detach();*/
 
 
 	/*sf::TcpListener listener;
