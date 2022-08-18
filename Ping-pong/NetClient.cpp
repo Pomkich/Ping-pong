@@ -13,7 +13,6 @@ void NetClient::Connect(sf::IpAddress address, unsigned short port) {
 		return;
 	}
 	else {
-		socket.setBlocking(false);
 		std::cout << "connection established" << std::endl;
 	}
 
@@ -24,6 +23,7 @@ void NetClient::Connect(sf::IpAddress address, unsigned short port) {
 }
 
 void NetClient::Disconnect() {
+	std::cout << "client: disconnect" << std::endl;
 	{
 		std::unique_lock<std::mutex> lock(interrupt_mutex);
 		interrupt = true;
@@ -39,14 +39,19 @@ void NetClient::Write(sf::Packet packet) {
 }
 
 void NetClient::Read() {
+	sf::Socket::Status status;
 	while (true) {
 		{	// checking whether an interrupt is needed
 			std::unique_lock<std::mutex> lock(interrupt_mutex);
 			if (interrupt) return;
 		}
-		if (socket.receive(receive_data) != sf::Socket::Done) {
-			//std::cout << "can't receive data" << std::endl;
-		}
+		status = socket.receive(receive_data);
+
+		if (status == sf::Socket::Disconnected)
+			Disconnect();
+		else if (status == sf::Socket::Done)
+			OnRead();
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(8));
 	}
 }
