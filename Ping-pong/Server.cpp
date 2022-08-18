@@ -18,7 +18,7 @@ void Server::AcceptConnections() {
 			std::cout << "connection error" << std::endl;
 		}
 		else {
-			std::unique_lock<std::mutex> lock(mut);
+			std::unique_lock<std::mutex> lock(player_access_mut);
 			// move pointer to any player
 			if (player_1 == nullptr) {
 				std::cout << "player 1 set" << std::endl;
@@ -58,14 +58,19 @@ void Server::AcceptConnections() {
 
 void Server::Run() {
 	listener_thread = std::move(std::thread(&Server::AcceptConnections, &(*this)));
+	read_thread = std::move(std::thread(&Server::ReadMessages, &(*this)));
 	listener_thread.detach();
+	read_thread.detach();
+}
 
+void Server::ReadMessages() {
 	std::string message;
 	sf::Socket::Status status;
 
 	while (true) {
-		std::unique_lock<std::mutex> lock(mut);
+		std::unique_lock<std::mutex> lock(player_access_mut);
 
+		// getting data from players
 		if (player_1 != nullptr) {
 			status = player_1->receive(message_p_1);
 			if (status == sf::Socket::Done) {
@@ -99,6 +104,17 @@ void Server::Run() {
 	}
 }
 
+/*void Server::SendData()[
+
+]*/
+
 void Server::OnReady() {
 	std::cout << "game start" << std::endl;
+}
+
+void Server::sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_x, int p2_y) {
+	std::unique_lock<std::mutex> lock(send_packet_mut);
+	sf::Packet new_packet;
+	new_packet << ball_x << ball_y << p1_x << p1_y << p2_x << p2_y;
+	data_to_send.push(new_packet);
 }
