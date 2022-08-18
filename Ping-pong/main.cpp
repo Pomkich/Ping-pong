@@ -10,6 +10,7 @@
 using namespace std;
 
 int main() {
+	
 	NetClient c1;
 	std::thread connection_1(&NetClient::Connect, &c1, "127.0.0.1", 57000);
 	connection_1.detach();
@@ -42,6 +43,9 @@ int main() {
 
 	connection_2 = std::move(std::thread(&NetClient::Connect, &c2, "127.0.0.1", 57000));
 	connection_2.detach();
+
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	server.Stop();
 
 	std::this_thread::sleep_for(std::chrono::seconds(30));
 

@@ -10,6 +10,13 @@
 
 class Server : public PongObserver {
 private:
+	// variables for interrupting threads
+	std::mutex interrupt_m_list; bool interrupt_b_list;
+	std::mutex interrupt_m_read; bool interrupt_b_read;
+	std::mutex interrupt_m_send; bool interrupt_b_send;
+	std::condition_variable threads_stoped;
+
+	// variables to access game data
 	std::mutex player_access_mut;
 	std::mutex send_packet_mut;
 	std::condition_variable no_data;
@@ -17,7 +24,7 @@ private:
 	std::thread listener_thread;
 	std::thread read_thread;
 	std::thread send_thread;
-
+	
 	sf::TcpListener listener;
 	std::unique_ptr<sf::TcpSocket> player_1;
 	std::unique_ptr<sf::TcpSocket> player_2;
@@ -29,6 +36,7 @@ private:
 public:
 	Server();
 	void Run();
+	void Stop();
 
 private:
 	void AcceptConnections();

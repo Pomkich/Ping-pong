@@ -1,7 +1,50 @@
 #include "Server.h"
 
 Server::Server() {
+	interrupt_b_list = false;
+	interrupt_b_read = false;
+	interrupt_b_send = false;
+}
 
+// threads starter
+void Server::Run() {
+	// disable interrupt
+	interrupt_b_list = false;
+	interrupt_b_read = false;
+	interrupt_b_send = false;
+
+	listener_thread = std::move(std::thread(&Server::AcceptConnections, &(*this)));
+	read_thread = std::move(std::thread(&Server::ReadMessages, &(*this)));
+	send_thread = std::move(std::thread(&Server::SendData, &(*this)));
+	listener_thread.detach();
+	read_thread.detach();
+	send_thread.detach();
+}
+
+
+void Server::Stop() {
+	// enable interrupt
+	std::unique_lock<std::mutex> lock_list(interrupt_m_list);
+	std::unique_lock<std::mutex> lock_read(interrupt_m_read);
+	std::unique_lock<std::mutex> lock_send(interrupt_m_send);
+
+	interrupt_b_list = true;
+	interrupt_b_read = true;
+	interrupt_b_send = true;
+
+	// wait when all threads interrupt
+	threads_stoped.wait(lock_list, [&] { return !interrupt_b_list; });
+	threads_stoped.wait(lock_read, [&] { return !interrupt_b_read; });
+	threads_stoped.wait(lock_send, [&] { return !interrupt_b_send; });
+
+	// disconnect players
+	player_1->setBlocking(true);
+	player_1->disconnect();
+	player_1.reset();
+
+	player_2->setBlocking(true);
+	player_2->disconnect();
+	player_2.reset();
 }
 
 void Server::AcceptConnections() {
@@ -11,13 +54,22 @@ void Server::AcceptConnections() {
 		std::cout << "can't listen" << std::endl;
 	else std::cout << "starting listen" << std::endl;
 
+	listener.setBlocking(false);
+
 	// this thread only accept new connections
 	// and rejects them, if lobby is full
 	while (true) {
-		if (listener.accept(*temp_socket) != sf::Socket::Done) {
-			std::cout << "connection error" << std::endl;
+		{	// interruption of thread
+			std::unique_lock<std::mutex> lock(interrupt_m_list);
+			if (interrupt_b_list) {
+				std::cout << "interrupt listener" << std::endl;
+				interrupt_b_list = false;
+				threads_stoped.notify_one();
+				return;
+			}
 		}
-		else {
+
+		if (listener.accept(*temp_socket) == sf::Socket::Done) {
 			std::unique_lock<std::mutex> lock(player_access_mut);
 			// move pointer to any player
 			if (player_1 == nullptr) {
@@ -56,22 +108,22 @@ void Server::AcceptConnections() {
 	}
 }
 
-// threads starter
-void Server::Run() {
-	listener_thread = std::move(std::thread(&Server::AcceptConnections, &(*this)));
-	read_thread = std::move(std::thread(&Server::ReadMessages, &(*this)));
-	send_thread = std::move(std::thread(&Server::SendData, &(*this)));
-	listener_thread.detach();
-	read_thread.detach();
-	send_thread.detach();
-}
-
 // reader thread
 void Server::ReadMessages() {
 	std::string message;
 	sf::Socket::Status status;
 
 	while (true) {
+		{	// interruption of thread
+			std::unique_lock<std::mutex> lock(interrupt_m_read);
+			if (interrupt_b_read) {
+				std::cout << "interrupt reader" << std::endl;
+				interrupt_b_read = false;
+				threads_stoped.notify_one();
+				return;
+			}
+		}
+
 		std::unique_lock<std::mutex> lock(player_access_mut);
 
 		// getting data from players
@@ -111,6 +163,16 @@ void Server::ReadMessages() {
 // sending data thread
 void Server::SendData() {
 	while (true) {
+		{	// interruption of thread
+			std::unique_lock<std::mutex> lock(interrupt_m_send);
+			if (interrupt_b_send) {
+				std::cout << "interrupt sender" << std::endl;
+				interrupt_b_send = false;
+				threads_stoped.notify_one();
+				return;
+			}
+		}
+
 		std::unique_lock<std::mutex> lock(send_packet_mut);
 		no_data.wait(lock, [&] {return data_to_send.empty(); });	// blocking operation
 
