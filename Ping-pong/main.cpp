@@ -27,9 +27,9 @@ int main() {
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	NetClient c3;
-	std::thread connection_3(&NetClient::Connect, &c3, "127.0.0.1", 57000);
-	connection_3.detach();
+	//NetClient c3;
+	//std::thread connection_3(&NetClient::Connect, &c3, "127.0.0.1", 57000);
+	//connection_3.detach();
 
 	std::this_thread::sleep_for(std::chrono::seconds(3));
 

@@ -7,6 +7,7 @@ NetClient::NetClient() {
 
 void NetClient::Connect(sf::IpAddress address, unsigned short port) {
 	socket.setBlocking(true);
+	interrupt = false;
 
 	if (socket.connect(address, port) != sf::Socket::Done) {
 		std::cout << "timeout" << std::endl;
