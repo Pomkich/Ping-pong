@@ -56,13 +56,17 @@ void Server::AcceptConnections() {
 	}
 }
 
+// threads starter
 void Server::Run() {
 	listener_thread = std::move(std::thread(&Server::AcceptConnections, &(*this)));
 	read_thread = std::move(std::thread(&Server::ReadMessages, &(*this)));
+	send_thread = std::move(std::thread(&Server::SendData, &(*this)));
 	listener_thread.detach();
 	read_thread.detach();
+	send_thread.detach();
 }
 
+// reader thread
 void Server::ReadMessages() {
 	std::string message;
 	sf::Socket::Status status;
@@ -104,17 +108,33 @@ void Server::ReadMessages() {
 	}
 }
 
-/*void Server::SendData()[
+// sending data thread
+void Server::SendData() {
+	while (true) {
+		std::unique_lock<std::mutex> lock(send_packet_mut);
+		no_data.wait(lock, [&] {return data_to_send.empty(); });	// blocking operation
 
-]*/
+		// needed to lock player mutex for sending data
+		std::unique_lock<std::mutex> player_lock(player_access_mut);
+		while (!data_to_send.empty()) {
+			sf::Packet packet = data_to_send.front();
+			data_to_send.pop();
+			player_1->send(packet);
+			player_2->send(packet);
+		}
+	}
+}
 
 void Server::OnReady() {
 	std::cout << "game start" << std::endl;
 }
 
 void Server::sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_x, int p2_y) {
-	std::unique_lock<std::mutex> lock(send_packet_mut);
+	// for better perfomance should create data without mutex lock
 	sf::Packet new_packet;
 	new_packet << ball_x << ball_y << p1_x << p1_y << p2_x << p2_y;
+
+	std::unique_lock<std::mutex> lock(send_packet_mut);
 	data_to_send.push(new_packet);
+	no_data.notify_one();
 }

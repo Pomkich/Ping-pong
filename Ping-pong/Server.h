@@ -12,16 +12,19 @@ class Server : public PongObserver {
 private:
 	std::mutex player_access_mut;
 	std::mutex send_packet_mut;
+	std::condition_variable no_data;
+
 	std::thread listener_thread;
 	std::thread read_thread;
+	std::thread send_thread;
 
 	sf::TcpListener listener;
 	std::unique_ptr<sf::TcpSocket> player_1;
 	std::unique_ptr<sf::TcpSocket> player_2;
-	sf::Packet message_p_1;
+	sf::Packet message_p_1;					// buffers of players messages
 	sf::Packet message_p_2;
-	std::queue<sf::Packet> data_to_send;
-
+	std::queue<sf::Packet> data_to_send;	// shared data between consumer and producer
+											// SendData - consumer, sendCoordinates - producer
 
 public:
 	Server();
@@ -30,7 +33,7 @@ public:
 private:
 	void AcceptConnections();
 	void ReadMessages();
-	//void SendData();
+	void SendData();
 
 	void OnReady();
 	virtual void sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_x, int p2_y) override;
