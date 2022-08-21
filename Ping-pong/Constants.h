@@ -8,6 +8,10 @@ enum class GameState {
 	running, prestart
 };
 
+enum class ClientState {
+	Menu, Game
+};
+
 const int screen_width = 800;
 const int screen_height = 600;
 

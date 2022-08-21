@@ -1,6 +1,7 @@
 #include "Client.h"
 
 Client::Client() {
+    state = ClientState::Menu;
 	window.create(sf::VideoMode(screen_width, screen_height), "SFML works!");
 
 	// setting up graphics
@@ -52,17 +53,11 @@ void Client::Render() {
 }
 
 void Client::Run() {
-	std::thread game_thread = std::thread(&PingPong::Run, &(*ping_pong));
-	game_thread.detach();
 
 	while (window.isOpen()) {
 		HandleInput();
 		Render();
 	}
-}
-
-void Client::Initialize() {
-    ping_pong = std::make_shared<PingPong>(shared_from_this());
 }
 
 void Client::HandleInput() {
@@ -71,49 +66,77 @@ void Client::HandleInput() {
     {
         if (event.type == sf::Event::Closed)
             window.close();
-        else if (event.type == sf::Event::KeyPressed) {
-            switch (event.key.code) {
-            case sf::Keyboard::Left:
-                ping_pong->notifyKeyPress(PressedKey::left, true, 1);
+        else {
+            switch (state) {
+            case ClientState::Menu:
+                HandleInputMenu(event);
                 break;
-            case sf::Keyboard::Right:
-                ping_pong->notifyKeyPress(PressedKey::right, true, 1);
-                break;
-            case sf::Keyboard::A:
-                ping_pong->notifyKeyPress(PressedKey::left, true, 0);
-                break;
-            case sf::Keyboard::D:
-                ping_pong->notifyKeyPress(PressedKey::right, true, 0);
-                break;
-            case sf::Keyboard::Space:
-                ping_pong->notifyKeyPress(PressedKey::space, true, 1);
-                break;
-            case sf::Keyboard::W:
-                ping_pong->notifyKeyPress(PressedKey::space, true, 0);
-                break;
-            }
-        }
-        else if (event.type == sf::Event::KeyReleased) {
-            switch (event.key.code) {
-            case sf::Keyboard::Left:
-                ping_pong->notifyKeyPress(PressedKey::left, false, 1);
-                break;
-            case sf::Keyboard::Right:
-                ping_pong->notifyKeyPress(PressedKey::right, false, 1);
-                break;
-            case sf::Keyboard::A:
-                ping_pong->notifyKeyPress(PressedKey::left, false, 0);
-                break;
-            case sf::Keyboard::D:
-                ping_pong->notifyKeyPress(PressedKey::right, false, 0);
-                break;
-            case sf::Keyboard::Space:
-                ping_pong->notifyKeyPress(PressedKey::space, false, 1);
-                break;
-            case sf::Keyboard::W:
-                ping_pong->notifyKeyPress(PressedKey::space, false, 0);
+
+            case ClientState::Game:
+                HandleInputGame(event);
                 break;
             }
         }
     }
+}
+
+void Client::HandleInputMenu(sf::Event& event) {
+    if (event.type == sf::Event::KeyPressed) {
+        switch (event.key.code) {
+        case sf::Keyboard::Num1:
+            Connect();
+            break;
+
+        case sf::Keyboard::Num2:
+            CreateServer();
+            break;
+
+        case sf::Keyboard::Num3:
+            Exit();
+            break;
+        }
+    }
+}
+
+void Client::HandleInputGame(sf::Event& event) {
+    if (event.type == sf::Event::KeyPressed) {
+        switch (event.key.code) {
+        case sf::Keyboard::Left:
+
+            break;
+        case sf::Keyboard::Right:
+
+            break;
+
+        case sf::Keyboard::Space:
+
+            break;
+        }
+    }
+    else if (event.type == sf::Event::KeyReleased) {
+        switch (event.key.code) {
+        case sf::Keyboard::Left:
+
+            break;
+        case sf::Keyboard::Right:
+
+            break;
+        case sf::Keyboard::Space:
+
+            break;
+        }
+    }
+}
+
+void Client::Connect() {
+    std::cout << "connecting..." << std::endl;
+    //connection->Connect("127.0.0.1", 57000);
+}
+
+void Client::CreateServer() {
+    std::cout << "creating server..." << std::endl;
+}
+
+void Client::Exit() {
+    std::cout << "exit" << std::endl;
 }
