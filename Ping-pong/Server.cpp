@@ -14,6 +14,7 @@ void Server::Run() {
 		return;
 	}
 
+	ping_pong = std::make_shared<PingPong>(shared_from_this());
 	// disable interrupt
 	interrupt_b_list = false;
 	interrupt_b_read = false;
@@ -57,6 +58,9 @@ void Server::Stop() {
 	player_2->setBlocking(true);
 	player_2->disconnect();
 	player_2.reset();
+
+	ping_pong->Stop();
+	ping_pong.reset();
 
 	running = false;
 }
@@ -149,6 +153,7 @@ void Server::ReadMessages() {
 			}
 			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 1" << std::endl;
+				ping_pong->Stop();
 				player_1->setBlocking(true);
 				player_1->disconnect();
 				player_1.reset();
@@ -163,6 +168,7 @@ void Server::ReadMessages() {
 			}
 			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 2" << std::endl;
+				ping_pong->Stop();
 				player_2->setBlocking(true);
 				player_2->disconnect();
 				player_2.reset();
@@ -188,7 +194,7 @@ void Server::SendData() {
 		}
 
 		std::unique_lock<std::mutex> lock(send_packet_mut);
-		no_data.wait(lock, [&] {return data_to_send.empty(); });	// blocking operation
+		no_data.wait(lock, [&] {return !data_to_send.empty(); });	// blocking operation
 
 		// needed to lock player mutex for sending data
 		std::unique_lock<std::mutex> player_lock(player_access_mut);
@@ -203,6 +209,7 @@ void Server::SendData() {
 
 void Server::OnReady() {
 	std::cout << "game start" << std::endl;
+	ping_pong->Run();
 }
 
 void Server::sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_x, int p2_y) {

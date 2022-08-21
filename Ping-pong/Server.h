@@ -6,9 +6,10 @@
 #include <mutex>
 #include <condition_variable>
 #include "PongObserver.h"
+#include "PingPong.h"
 #include <queue>
 
-class Server : public PongObserver {
+class Server : public PongObserver, public std::enable_shared_from_this<Server> {
 private:
 	// variables for interrupting threads
 	std::mutex interrupt_m_list; bool interrupt_b_list;
@@ -34,6 +35,7 @@ private:
 	std::queue<sf::Packet> data_to_send;	// shared data between consumer and producer
 											// SendData - consumer, sendCoordinates - producer
 
+	std::shared_ptr<PingPong> ping_pong;
 public:
 	Server();
 	void Run();

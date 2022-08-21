@@ -58,7 +58,10 @@ void NetClient::Read() {
 }
 
 void NetClient::OnRead() {
-	std::string message;
-	receive_data >> message;
-	std::cout << "received message: " << message << std::endl;
+	int ball_x, ball_y, p1_x, p1_y, p2_x, p2_y;
+	receive_data >> ball_x >> ball_y >> p1_x >> p1_y >> p2_x >> p2_y;
+	std::cout << "received message: " << 
+		ball_x << " " <<  ball_y << "   " <<
+		p1_x << " " << p1_y << "   " <<
+		p2_x << " " << p2_y << std::endl;
 }
