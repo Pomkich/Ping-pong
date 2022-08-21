@@ -48,16 +48,21 @@ void Server::Stop() {
 	// wait when all threads interrupt
 	threads_stoped.wait(lock_list, [&] { return !interrupt_b_list; });
 	threads_stoped.wait(lock_read, [&] { return !interrupt_b_read; });
+	no_data.notify_one();	// wake up without data
 	threads_stoped.wait(lock_send, [&] { return !interrupt_b_send; });
 
 	// disconnect players
-	player_1->setBlocking(true);
-	player_1->disconnect();
-	player_1.reset();
+	if (player_1) {
+		player_1->setBlocking(true);
+		player_1->disconnect();
+		player_1.reset();
+	}
 
-	player_2->setBlocking(true);
-	player_2->disconnect();
-	player_2.reset();
+	if (player_2) {
+		player_2->setBlocking(true);
+		player_2->disconnect();
+		player_2.reset();
+	}
 
 	ping_pong->Stop();
 	ping_pong.reset();
@@ -155,7 +160,9 @@ void Server::ReadMessages() {
 			}
 			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 1" << std::endl;
+				lock.unlock();	// there is deadlock if do not unlock this mutex
 				ping_pong->Stop();
+				lock.lock();
 				player_1->setBlocking(true);
 				player_1->disconnect();
 				player_1.reset();
@@ -170,7 +177,9 @@ void Server::ReadMessages() {
 			}
 			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 2" << std::endl;
+				lock.unlock();
 				ping_pong->Stop();
+				lock.lock();
 				player_2->setBlocking(true);
 				player_2->disconnect();
 				player_2.reset();
@@ -197,19 +206,19 @@ void Server::SendData() {
 		}
 
 		std::unique_lock<std::mutex> lock(send_packet_mut);
-		no_data.wait(lock, [&] {return !data_to_send.empty(); });	// blocking operation
+		// the stream will be blocked if no data, so he can't be interrupted 
+		// when packets don't come
+		// for the reason above added one more condition to exit from block
+		no_data.wait(lock, [&] {return (!data_to_send.empty() || interrupt_b_send); });
 
 		// needed to lock player mutex for sending data
 		std::unique_lock<std::mutex> player_lock(player_access_mut);
 		while (!data_to_send.empty()) {
 			sf::Packet packet = data_to_send.front();
 			data_to_send.pop();
-			if (player_1) {
-				player_1->send(packet);
-			}
-			if (player_2) {
-				player_2->send(packet);
-			}
+
+			if (player_1) player_1->send(packet);
+			if (player_2) player_2->send(packet);
 		}
 	}
 }

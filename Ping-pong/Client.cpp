@@ -140,6 +140,8 @@ void Client::Connect() {
 void Client::CreateServer() {
     std::cout << "creating server..." << std::endl;
     server->Run();
+    //std::this_thread::sleep_for(std::chrono::seconds(2));
+    //server->Stop();
     connection->Connect("127.0.0.1", 57000);
     state = ClientState::Game;
 }
