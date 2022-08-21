@@ -37,70 +37,17 @@ PingPong::PingPong(std::shared_ptr<PongObserver> obs) {
 	ball.setMoving(sf::Vector2f(start_ball_speed, -start_ball_speed));
 }
 
-void PingPong::update(float dt_time) {
-	for (int i = 0; i < players.size(); i++) {
-		players[i].update(dt_time);
-	}
-
-	auto panel = players[lost_player_id].getPanel();	// + 1 to off collision
-	double y_offset = (lost_player_id == side_up) ? panel_height + 1 : -ball.getBall().getRadius() * 2 - 1;
-	switch (game_state) {
-	case GameState::prestart:	
-		// follow lost player
-		ball.setPosition(sf::Vector2f(panel.getPosition().x + panel_width / 4, 
-			panel.getPosition().y + y_offset));
-		break;
-
-	case GameState::running:
-		ball.update(dt_time);
-		break;
-	}
-}
-
-void PingPong::checkCollisions() {
-	// collisions checked only for the ball
-	// wall collision
-	if (circleVsRectangle(ball.getBall(), walls[0]) || 
-		circleVsRectangle(ball.getBall(), walls[1])) {
-		ball.setMoving(sf::Vector2f(-ball.getMoving().x, ball.getMoving().y));
-	}
-	else if (circleVsRectangle(ball.getBall(), players[side_up].getPanel()) ||
-		circleVsRectangle(ball.getBall(), players[side_bot].getPanel())) {
-		std::cout << "detected" << std::endl;
-		ball.setMoving(sf::Vector2f(ball.getMoving().x, -ball.getMoving().y));
-	}
-	else if (circleVsRectangle(ball.getBall(), lose_bounds[side_up])) {
-		std::cout << "up player lose" << std::endl;
-		lost_player_id = side_up;
-		game_state = GameState::prestart;
-	}
-	else if (circleVsRectangle(ball.getBall(), lose_bounds[side_bot])) {
-		std::cout << "bottom player lose" << std::endl;
-		lost_player_id = side_bot;
-		game_state = GameState::prestart;
-	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(8));
-}
-
 void PingPong::Run() {
-	std::cout << "game started" << std::endl;
-	auto ball_pos = ball.getBall().getPosition();
-	auto player1_pos = players[0].getPanel().getPosition();
-	auto player2_pos = players[1].getPanel().getPosition();
-	while (true) {
-		clock.restart();
-		checkCollisions();
-		update(clock.getElapsedTime().asSeconds());
+	interrupt = false;
+	game_loop = std::move(std::thread(&PingPong::GameLoop, &(*this)));
+	game_loop.detach();
+}
 
-		ball_pos = ball.getBall().getPosition();
-		player1_pos = players[0].getPanel().getPosition();
-		player2_pos = players[1].getPanel().getPosition();
-
-		observer->sendCoordinates(
-			ball_pos.x, ball_pos.y,
-			player1_pos.x, player1_pos.y,
-			player2_pos.x, player2_pos.y);
-	}
+void PingPong::Stop() {
+	std::unique_lock<std::mutex> lock(interrupt_m);
+	interrupt = true;
+	// wait until thread will stop
+	game_stoped.wait(lock, [&] { return !interrupt; });
 }
 
 void PingPong::notifyKeyPress(PressedKey key, bool is_enabled, int id) {
@@ -120,6 +67,81 @@ void PingPong::notifyKeyPress(PressedKey key, bool is_enabled, int id) {
 		}
 		break;
 	}
+}
+
+void PingPong::GameLoop() {
+	std::cout << "game started" << std::endl;
+	auto ball_pos = ball.getBall().getPosition();
+	auto player1_pos = players[0].getPanel().getPosition();
+	auto player2_pos = players[1].getPanel().getPosition();
+	while (true) {
+		{	// interruption when needed
+			std::unique_lock<std::mutex> lock(interrupt_m);
+			if (interrupt) {
+				std::cout << "game stoped" << std::endl;
+				return;
+			}
+		}
+
+		clock.restart();
+		checkCollisions();
+		update(clock.getElapsedTime().asSeconds());
+
+		ball_pos = ball.getBall().getPosition();
+		player1_pos = players[0].getPanel().getPosition();
+		player2_pos = players[1].getPanel().getPosition();
+
+		observer->sendCoordinates(
+			ball_pos.x, ball_pos.y,
+			player1_pos.x, player1_pos.y,
+			player2_pos.x, player2_pos.y);
+	}
+}
+
+void PingPong::update(float dt_time) {
+	for (int i = 0; i < players.size(); i++) {
+		players[i].update(dt_time);
+	}
+
+	auto panel = players[lost_player_id].getPanel();	// + 1 to off collision
+	double y_offset = (lost_player_id == side_up) ? panel_height + 1 : -ball.getBall().getRadius() * 2 - 1;
+	switch (game_state) {
+	case GameState::prestart:
+		// follow lost player
+		ball.setPosition(sf::Vector2f(panel.getPosition().x + panel_width / 4,
+			panel.getPosition().y + y_offset));
+		break;
+
+	case GameState::running:
+		ball.update(dt_time);
+		break;
+	}
+}
+
+
+void PingPong::checkCollisions() {
+	// collisions checked only for the ball
+	// wall collision
+	if (circleVsRectangle(ball.getBall(), walls[0]) ||
+		circleVsRectangle(ball.getBall(), walls[1])) {
+		ball.setMoving(sf::Vector2f(-ball.getMoving().x, ball.getMoving().y));
+	}
+	else if (circleVsRectangle(ball.getBall(), players[side_up].getPanel()) ||
+		circleVsRectangle(ball.getBall(), players[side_bot].getPanel())) {
+		std::cout << "detected" << std::endl;
+		ball.setMoving(sf::Vector2f(ball.getMoving().x, -ball.getMoving().y));
+	}
+	else if (circleVsRectangle(ball.getBall(), lose_bounds[side_up])) {
+		std::cout << "up player lose" << std::endl;
+		lost_player_id = side_up;
+		game_state = GameState::prestart;
+	}
+	else if (circleVsRectangle(ball.getBall(), lose_bounds[side_bot])) {
+		std::cout << "bottom player lose" << std::endl;
+		lost_player_id = side_bot;
+		game_state = GameState::prestart;
+	}
+	std::this_thread::sleep_for(std::chrono::milliseconds(8));
 }
 
 bool PingPong::circleVsRectangle(sf::CircleShape& circle, sf::RectangleShape& rect) {
