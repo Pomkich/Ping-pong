@@ -4,6 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include "PongObserver.h"
 
 class NetClient {
 private:
@@ -15,8 +16,10 @@ private:
 	sf::Packet receive_data;
 	std::thread listener;
 
+	std::shared_ptr<PongObserver> observer;
+
 public:
-	NetClient();
+	NetClient(std::shared_ptr<PongObserver> obs);
 	void Connect(sf::IpAddress address, unsigned short port);
 	void Disconnect();
 

@@ -2,6 +2,7 @@
 
 Client::Client() {
     state = ClientState::Menu;
+
 	window.create(sf::VideoMode(screen_width, screen_height), "SFML works!");
 
 	// setting up graphics
@@ -53,6 +54,8 @@ void Client::Render() {
 }
 
 void Client::Run() {
+    connection = std::make_shared<NetClient>(shared_from_this());
+    server = std::make_shared<Server>();
 
 	while (window.isOpen()) {
 		HandleInput();
@@ -131,6 +134,7 @@ void Client::HandleInputGame(sf::Event& event) {
 void Client::Connect() {
     std::cout << "connecting..." << std::endl;
     //connection->Connect("127.0.0.1", 57000);
+    //state = ClientState::Game;
 }
 
 void Client::CreateServer() {

@@ -1,6 +1,7 @@
 #include "NetClient.h"
 
-NetClient::NetClient() {
+NetClient::NetClient(std::shared_ptr<PongObserver> obs) {
+	observer = obs;
 	interrupt = false;
 	socket.setBlocking(false);
 }

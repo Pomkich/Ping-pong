@@ -25,8 +25,8 @@ int main() {
 	server->Run();
 	std::this_thread::sleep_for(std::chrono::seconds(3));
 	server->Stop();*/
-	Client clt;
-	clt.Run();
+	shared_ptr<Client> clt = make_shared<Client>();
+	clt->Run();
 
 	std::this_thread::sleep_for(std::chrono::seconds(30));
 
