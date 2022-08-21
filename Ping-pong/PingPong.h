@@ -23,6 +23,7 @@ private:
 	std::mutex interrupt_m;
 	std::condition_variable game_stoped;
 	bool interrupt;
+	bool running;
 
 	std::shared_ptr<PongObserver> observer;
 

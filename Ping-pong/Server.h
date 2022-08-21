@@ -24,6 +24,7 @@ private:
 	std::thread listener_thread;
 	std::thread read_thread;
 	std::thread send_thread;
+	bool running;
 	
 	sf::TcpListener listener;
 	std::unique_ptr<sf::TcpSocket> player_1;

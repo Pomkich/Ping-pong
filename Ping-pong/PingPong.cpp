@@ -2,6 +2,7 @@
 
 PingPong::PingPong(std::shared_ptr<PongObserver> obs) {
 	observer = obs;
+	running = false;
 
 	for (int i = 0; i < players.size(); i++) {
 		players[i].getPanel().setSize(sf::Vector2f(panel_width, panel_height));
@@ -38,16 +39,26 @@ PingPong::PingPong(std::shared_ptr<PongObserver> obs) {
 }
 
 void PingPong::Run() {
+	if (running) {
+		std::cout << "game already running" << std::endl;
+		return;
+	}
 	interrupt = false;
+	running = true;
 	game_loop = std::move(std::thread(&PingPong::GameLoop, &(*this)));
 	game_loop.detach();
 }
 
 void PingPong::Stop() {
+	if (!running) {
+		std::cout << "game already stoped" << std::endl;
+		return;
+	}
 	std::unique_lock<std::mutex> lock(interrupt_m);
 	interrupt = true;
 	// wait until thread will stop
 	game_stoped.wait(lock, [&] { return !interrupt; });
+	running = false;
 }
 
 void PingPong::notifyKeyPress(PressedKey key, bool is_enabled, int id) {
@@ -79,6 +90,8 @@ void PingPong::GameLoop() {
 			std::unique_lock<std::mutex> lock(interrupt_m);
 			if (interrupt) {
 				std::cout << "game stoped" << std::endl;
+				interrupt = false;
+				game_stoped.notify_one();
 				return;
 			}
 		}

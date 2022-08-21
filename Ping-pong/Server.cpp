@@ -4,10 +4,16 @@ Server::Server() {
 	interrupt_b_list = false;
 	interrupt_b_read = false;
 	interrupt_b_send = false;
+	running = false;
 }
 
 // threads starter
 void Server::Run() {
+	if (running) {
+		std::cout << "server already running" << std::endl;
+		return;
+	}
+
 	// disable interrupt
 	interrupt_b_list = false;
 	interrupt_b_read = false;
@@ -19,10 +25,16 @@ void Server::Run() {
 	listener_thread.detach();
 	read_thread.detach();
 	send_thread.detach();
+
+	running = true;
 }
 
 
 void Server::Stop() {
+	if (!running) {
+		std::cout << "server already stoped" << std::endl;
+		return;
+	}
 	// enable interrupt
 	std::unique_lock<std::mutex> lock_list(interrupt_m_list);
 	std::unique_lock<std::mutex> lock_read(interrupt_m_read);
@@ -45,6 +57,8 @@ void Server::Stop() {
 	player_2->setBlocking(true);
 	player_2->disconnect();
 	player_2.reset();
+
+	running = false;
 }
 
 void Server::AcceptConnections() {
