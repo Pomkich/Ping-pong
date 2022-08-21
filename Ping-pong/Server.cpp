@@ -82,6 +82,7 @@ void Server::AcceptConnections() {
 			if (interrupt_b_list) {
 				std::cout << "interrupt listener" << std::endl;
 				interrupt_b_list = false;
+				lock.unlock();
 				threads_stoped.notify_one();
 				return;
 			}
@@ -137,6 +138,7 @@ void Server::ReadMessages() {
 			if (interrupt_b_read) {
 				std::cout << "interrupt reader" << std::endl;
 				interrupt_b_read = false;
+				lock.unlock();
 				threads_stoped.notify_one();
 				return;
 			}
@@ -188,6 +190,7 @@ void Server::SendData() {
 			if (interrupt_b_send) {
 				std::cout << "interrupt sender" << std::endl;
 				interrupt_b_send = false;
+				lock.unlock();
 				threads_stoped.notify_one();
 				return;
 			}
@@ -201,8 +204,12 @@ void Server::SendData() {
 		while (!data_to_send.empty()) {
 			sf::Packet packet = data_to_send.front();
 			data_to_send.pop();
-			player_1->send(packet);
-			player_2->send(packet);
+			if (player_1) {
+				player_1->send(packet);
+			}
+			if (player_2) {
+				player_2->send(packet);
+			}
 		}
 	}
 }
@@ -219,5 +226,6 @@ void Server::sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_
 
 	std::unique_lock<std::mutex> lock(send_packet_mut);
 	data_to_send.push(new_packet);
+	lock.unlock();
 	no_data.notify_one();
 }

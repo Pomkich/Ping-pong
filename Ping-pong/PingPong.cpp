@@ -91,6 +91,7 @@ void PingPong::GameLoop() {
 			if (interrupt) {
 				std::cout << "game stoped" << std::endl;
 				interrupt = false;
+				lock.unlock();
 				game_stoped.notify_one();
 				return;
 			}

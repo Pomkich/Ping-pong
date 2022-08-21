@@ -133,12 +133,15 @@ void Client::HandleInputGame(sf::Event& event) {
 
 void Client::Connect() {
     std::cout << "connecting..." << std::endl;
-    //connection->Connect("127.0.0.1", 57000);
-    //state = ClientState::Game;
+    connection->Connect("127.0.0.1", 57000);
+    state = ClientState::Game;
 }
 
 void Client::CreateServer() {
     std::cout << "creating server..." << std::endl;
+    server->Run();
+    connection->Connect("127.0.0.1", 57000);
+    state = ClientState::Game;
 }
 
 void Client::Exit() {
