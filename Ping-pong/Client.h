@@ -12,15 +12,21 @@ class Client : public PongObserver, public std::enable_shared_from_this<Client> 
 private:
 	ClientState state;
 	sf::RenderWindow window;
+
 	sf::RectangleShape player;
 	sf::RectangleShape enemy;
 	sf::CircleShape ball;
-
 	std::array<sf::RectangleShape, 2> walls;
 	std::array<sf::RectangleShape, 2> lose_bounds;
 
 	std::shared_ptr<NetClient> connection;
 	std::shared_ptr<Server> server;
+
+	// variables needed to send input data to server
+	sf::Packet input;
+	bool left;
+	bool right;
+	bool space;
 
 public:
 	Client();

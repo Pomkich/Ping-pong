@@ -3,6 +3,10 @@
 Client::Client() {
     state = ClientState::Menu;
 
+    left = false;
+    right = false;
+    space = false;
+
 	window.create(sf::VideoMode(screen_width, screen_height), "SFML works!");
 
 	// setting up graphics
@@ -67,8 +71,11 @@ void Client::HandleInput() {
     sf::Event event;
     while (window.pollEvent(event))
     {
-        if (event.type == sf::Event::Closed)
+        if (event.type == sf::Event::Closed) {
+            connection->Disconnect();
+            server->Stop();
             window.close();
+        }
         else {
             switch (state) {
             case ClientState::Menu:
@@ -105,30 +112,31 @@ void Client::HandleInputGame(sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
         case sf::Keyboard::Left:
-
+            left = true;
             break;
         case sf::Keyboard::Right:
-
+            right = true;
             break;
-
         case sf::Keyboard::Space:
-
+            space = true;
             break;
         }
     }
     else if (event.type == sf::Event::KeyReleased) {
         switch (event.key.code) {
         case sf::Keyboard::Left:
-
+            left = false;
             break;
         case sf::Keyboard::Right:
-
+            right = false;
             break;
         case sf::Keyboard::Space:
-
+            space = false;
             break;
         }
     }
+    input << left << right << space;
+    connection->Write(input);
 }
 
 void Client::Connect() {

@@ -134,7 +134,7 @@ void Server::AcceptConnections() {
 
 // reader thread
 void Server::ReadMessages() {
-	std::string message;
+	//std::string message;
 	sf::Socket::Status status;
 
 	while (true) {
@@ -155,8 +155,9 @@ void Server::ReadMessages() {
 		if (player_1 != nullptr) {
 			status = player_1->receive(message_p_1);
 			if (status == sf::Socket::Done) {
-				message_p_1 >> message;
-				std::cout << "message player 1: " << message << std::endl;
+				bool left, right, space;
+				message_p_1 >> left >> right >> space;
+				std::cout << "message player 1: " << left << right << space << std::endl;
 			}
 			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 1" << std::endl;
@@ -167,13 +168,13 @@ void Server::ReadMessages() {
 				player_1->disconnect();
 				player_1.reset();
 			}
-			message.clear();
 		}
 		if (player_2 != nullptr) {
 			status = player_2->receive(message_p_2);
 			if (status == sf::Socket::Done) {
-				message_p_2 >> message;
-				std::cout << "message player 2: " << message << std::endl;
+				bool left, right, space;
+				message_p_2 >> left >> right >> space;
+				std::cout << "message player 2: " << left << right << space << std::endl;
 			}
 			else if (status == sf::Socket::Disconnected) {
 				std::cout << "disconnected player 2" << std::endl;
@@ -184,7 +185,6 @@ void Server::ReadMessages() {
 				player_2->disconnect();
 				player_2.reset();
 			}
-			message.clear();
 		}
 		lock.unlock();
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
@@ -224,7 +224,6 @@ void Server::SendData() {
 }
 
 void Server::OnReady() {
-	std::cout << "game start" << std::endl;
 	ping_pong->Run();
 }
 
