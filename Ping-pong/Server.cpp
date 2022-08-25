@@ -73,7 +73,7 @@ void Server::Stop() {
 void Server::AcceptConnections() {
 	std::unique_ptr<sf::TcpSocket> temp_socket = std::make_unique<sf::TcpSocket>();
 
-	if (listener.listen(57000) != sf::Socket::Done)
+	if (listener.listen(game_port) != sf::Socket::Done)
 		std::cout << "can't listen" << std::endl;
 	else std::cout << "starting listen" << std::endl;
 

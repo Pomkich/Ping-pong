@@ -13,6 +13,7 @@ enum class ClientState {
 };
 
 const int tick_rate = 8;
+const int game_port = 57000;
 
 const int screen_width = 800;
 const int screen_height = 600;

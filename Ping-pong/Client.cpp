@@ -142,8 +142,10 @@ void Client::HandleInputGame(sf::Event& event) {
 }
 
 void Client::Connect() {
-    std::cout << "connecting..." << std::endl;
-    connection->Connect("127.0.0.1", 57000);
+    std::cout << "enter ip please" << std::endl;
+    std::string ip;
+    std::cin >> ip;
+    connection->Connect(ip, game_port);
     state = ClientState::Game;
 }
 
@@ -152,7 +154,7 @@ void Client::CreateServer() {
     server->Run();
     //std::this_thread::sleep_for(std::chrono::seconds(2));
     //server->Stop();
-    connection->Connect("127.0.0.1", 57000);
+    connection->Connect("127.0.0.1", game_port);
     state = ClientState::Game;
 }
 
