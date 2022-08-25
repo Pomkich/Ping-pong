@@ -158,6 +158,10 @@ void Server::ReadMessages() {
 				bool left, right, space;
 				message_p_1 >> left >> right >> space;
 				message_p_1.clear();
+
+				ping_pong->notifyKeyPress(PressedKey::left, left, 0);
+				ping_pong->notifyKeyPress(PressedKey::right, right, 0);
+				ping_pong->notifyKeyPress(PressedKey::space, space, 0);
 				std::cout << "message player 1: " << left << right << space << std::endl;
 			}
 			else if (status == sf::Socket::Disconnected) {
@@ -176,6 +180,10 @@ void Server::ReadMessages() {
 				bool left, right, space;
 				message_p_2 >> left >> right >> space;
 				message_p_2.clear();
+
+				ping_pong->notifyKeyPress(PressedKey::left, left, 1);
+				ping_pong->notifyKeyPress(PressedKey::right, right, 1);
+				ping_pong->notifyKeyPress(PressedKey::space, space, 1);
 				std::cout << "message player 2: " << left << right << space << std::endl;
 			}
 			else if (status == sf::Socket::Disconnected) {
