@@ -157,6 +157,7 @@ void Server::ReadMessages() {
 			if (status == sf::Socket::Done) {
 				bool left, right, space;
 				message_p_1 >> left >> right >> space;
+				message_p_1.clear();
 				std::cout << "message player 1: " << left << right << space << std::endl;
 			}
 			else if (status == sf::Socket::Disconnected) {
@@ -174,6 +175,7 @@ void Server::ReadMessages() {
 			if (status == sf::Socket::Done) {
 				bool left, right, space;
 				message_p_2 >> left >> right >> space;
+				message_p_2.clear();
 				std::cout << "message player 2: " << left << right << space << std::endl;
 			}
 			else if (status == sf::Socket::Disconnected) {

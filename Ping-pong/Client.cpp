@@ -137,6 +137,7 @@ void Client::HandleInputGame(sf::Event& event) {
     }
     input << left << right << space;
     connection->Write(input);
+    input.clear();
 }
 
 void Client::Connect() {
