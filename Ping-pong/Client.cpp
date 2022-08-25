@@ -64,6 +64,7 @@ void Client::Run() {
 	while (window.isOpen()) {
 		HandleInput();
 		Render();
+        std::this_thread::sleep_for(std::chrono::milliseconds(tick_rate));
 	}
 }
 

@@ -129,6 +129,7 @@ void Server::AcceptConnections() {
 				temp_socket->disconnect();
 			}
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(tick_rate));
 	}
 }
 
@@ -197,7 +198,7 @@ void Server::ReadMessages() {
 			}
 		}
 		lock.unlock();
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		std::this_thread::sleep_for(std::chrono::milliseconds(tick_rate));
 	}
 }
 
@@ -230,6 +231,7 @@ void Server::SendData() {
 			if (player_1) player_1->send(packet);
 			if (player_2) player_2->send(packet);
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(tick_rate));
 	}
 }
 
