@@ -17,6 +17,10 @@ private:
 	std::array<sf::RectangleShape, 3> buttons;
 	std::array<sf::Text, 3> button_labels;
 
+	sf::RectangleShape ip_field;
+	sf::Text ip_text;
+	std::string ip_str;
+
 	sf::RectangleShape player;
 	sf::RectangleShape enemy;
 	sf::CircleShape ball;
@@ -41,10 +45,12 @@ private:
 	void Render();
 	void RenderGame();
 	void RenderMenu();
+	void RenderEnterIp();
 
 	void HandleInput();
 	void HandleInputMenu(sf::Event& event);
 	void HandleInputGame(sf::Event& event);
+	void HandleInputEnterIp(sf::Event& event);
 
 	void Connect();
 	void CreateServer();

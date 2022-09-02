@@ -31,6 +31,21 @@ Client::Client() {
     button_labels[1].setString(" Create Server");
     button_labels[2].setString("         Exit");
 
+
+    ip_text.setFont(font);
+    ip_text.setPosition(sf::Vector2f((screen_width - button_width) / 2, 300));
+    ip_text.setCharacterSize(36);
+    ip_text.setFillColor(sf::Color::Black);
+
+    ip_field.setSize(sf::Vector2f(button_width, button_height));
+    ip_field.setPosition(sf::Vector2f((screen_width - button_width) / 2, 300));
+    ip_field.setFillColor(sf::Color::White);
+    ip_field.setOutlineColor(sf::Color::Green);
+    ip_field.setOutlineThickness(5);
+
+    ip_str.clear();
+
+
 	// setting up game graphics
 	player.setSize(sf::Vector2f(panel_width, panel_height));
 	player.setFillColor(sf::Color::White);
@@ -65,6 +80,17 @@ void Client::sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_
 	enemy.setPosition(sf::Vector2f(p2_x, p2_y));
 }
 
+void Client::Run() {
+    connection = std::make_shared<NetClient>(shared_from_this());
+    server = std::make_shared<Server>();
+
+    while (window.isOpen()) {
+        HandleInput();
+        Render();
+        std::this_thread::sleep_for(std::chrono::milliseconds(tick_rate));
+    }
+}
+
 void Client::Render() {
     window.clear();
 
@@ -75,6 +101,10 @@ void Client::Render() {
 
     case ClientState::Menu:
         RenderMenu();
+        break;
+
+    case ClientState::EnterIp:
+        RenderEnterIp();
         break;
     }
 
@@ -100,16 +130,11 @@ void Client::RenderMenu() {
     }
 }
 
-void Client::Run() {
-    connection = std::make_shared<NetClient>(shared_from_this());
-    server = std::make_shared<Server>();
-
-	while (window.isOpen()) {
-		HandleInput();
-		Render();
-        std::this_thread::sleep_for(std::chrono::milliseconds(tick_rate));
-	}
+void Client::RenderEnterIp() {
+    window.draw(ip_field);
+    window.draw(ip_text);
 }
+
 
 void Client::HandleInput() {
     sf::Event event;
@@ -129,6 +154,10 @@ void Client::HandleInput() {
             case ClientState::Game:
                 HandleInputGame(event);
                 break;
+
+            case ClientState::EnterIp:
+                HandleInputEnterIp(event);
+                break;
             }
         }
     }
@@ -138,7 +167,7 @@ void Client::HandleInputMenu(sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
         case sf::Keyboard::Num1:
-            Connect();
+            state = ClientState::EnterIp;
             break;
 
         case sf::Keyboard::Num2:
@@ -184,6 +213,60 @@ void Client::HandleInputGame(sf::Event& event) {
     input.clear();
 }
 
+void Client::HandleInputEnterIp(sf::Event& event) {
+    if (event.type == sf::Event::KeyPressed) {
+        switch (event.key.code) {
+        case sf::Keyboard::Num1:
+            ip_str += '1';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num2:
+            ip_str += '2';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num3:
+            ip_str += '3';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num4:
+            ip_str += '4';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num5:
+            ip_str += '5';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num6:
+            ip_str += '6';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num7:
+            ip_str += '7';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num8:
+            ip_str += '8';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Num9:
+            ip_str += '9';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Period:
+            ip_str += '.';
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Backspace:
+            ip_str.erase(ip_str.end() - 1);
+            ip_text.setString(ip_str);
+            break;
+        case sf::Keyboard::Enter:
+            std::cout << "connecting" << std::endl;
+            break;
+        }
+    }
+}
+
 void Client::Connect() {
     std::cout << "enter ip please" << std::endl;
     std::string ip;
@@ -201,4 +284,7 @@ void Client::CreateServer() {
 
 void Client::Exit() {
     std::cout << "exit" << std::endl;
+    connection->Disconnect();
+    server->Stop();
+    exit(0);
 }

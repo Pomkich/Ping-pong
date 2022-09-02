@@ -9,7 +9,7 @@ enum class GameState {
 };
 
 enum class ClientState {
-	Menu, Game
+	Menu, Game, EnterIp
 };
 
 const int tick_rate = 8;
