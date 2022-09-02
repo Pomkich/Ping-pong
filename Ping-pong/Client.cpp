@@ -9,12 +9,27 @@ Client::Client() {
 
 	window.create(sf::VideoMode(screen_width, screen_height), "SFML works!");
 
+    if (font.loadFromFile("tms.ttf")) {
+        std::cout << "tms loaded" << std::endl;
+    }
+
     for (int i = 0; i < buttons.size(); i++) {
+        button_labels[i].setFont(font);
+        button_labels[i].setCharacterSize(48);
+        button_labels[i].setFillColor(sf::Color::Black);
+
         buttons[i].setSize(sf::Vector2f(button_width, button_height));
         buttons[i].setFillColor(sf::Color::Green);
         buttons[i].setPosition(sf::Vector2f((screen_width - button_width) / 2,
             offset_top + offset_button * i + button_height * i));
+
+        button_labels[i].setPosition(sf::Vector2f((screen_width - button_width) / 2,
+            offset_top + offset_button * i + button_height * i));
     }
+
+    button_labels[0].setString("     Connect");
+    button_labels[1].setString(" Create Server");
+    button_labels[2].setString("         Exit");
 
 	// setting up game graphics
 	player.setSize(sf::Vector2f(panel_width, panel_height));
@@ -79,6 +94,9 @@ void Client::RenderGame() {
 void Client::RenderMenu() {
     for (auto& button : buttons) {
         window.draw(button);
+    }
+    for (auto& label : button_labels) {
+        window.draw(label);
     }
 }
 

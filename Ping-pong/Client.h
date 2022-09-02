@@ -13,7 +13,9 @@ private:
 	ClientState state;
 	sf::RenderWindow window;
 
+	sf::Font font;
 	std::array<sf::RectangleShape, 3> buttons;
+	std::array<sf::Text, 3> button_labels;
 
 	sf::RectangleShape player;
 	sf::RectangleShape enemy;
