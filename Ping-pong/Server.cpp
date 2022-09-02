@@ -87,6 +87,7 @@ void Server::AcceptConnections() {
 			if (interrupt_b_list) {
 				std::cout << "interrupt listener" << std::endl;
 				interrupt_b_list = false;
+				listener.close();
 				lock.unlock();
 				threads_stoped.notify_one();
 				return;

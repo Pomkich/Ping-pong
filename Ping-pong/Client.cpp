@@ -184,6 +184,11 @@ void Client::HandleInputMenu(sf::Event& event) {
 void Client::HandleInputGame(sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
+        case sf::Keyboard::Q:
+            connection->Disconnect();
+            server->Stop();
+            state = ClientState::Menu;
+            break;
         case sf::Keyboard::Left:
             left = true;
             break;
@@ -216,6 +221,12 @@ void Client::HandleInputGame(sf::Event& event) {
 void Client::HandleInputEnterIp(sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
+        case sf::Keyboard::Q:
+            ip_str.clear();
+            ip_text.setString(ip_str);
+            state = ClientState::Menu;
+            break;
+
         case sf::Keyboard::Num0:
             ip_str += '0';
             ip_text.setString(ip_str);
