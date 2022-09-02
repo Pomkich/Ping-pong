@@ -216,6 +216,10 @@ void Client::HandleInputGame(sf::Event& event) {
 void Client::HandleInputEnterIp(sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
+        case sf::Keyboard::Num0:
+            ip_str += '0';
+            ip_text.setString(ip_str);
+            break;
         case sf::Keyboard::Num1:
             ip_str += '1';
             ip_text.setString(ip_str);
@@ -261,18 +265,19 @@ void Client::HandleInputEnterIp(sf::Event& event) {
             ip_text.setString(ip_str);
             break;
         case sf::Keyboard::Enter:
-            std::cout << "connecting" << std::endl;
+            Connect();
             break;
         }
     }
 }
 
 void Client::Connect() {
-    std::cout << "enter ip please" << std::endl;
-    std::string ip;
-    std::cin >> ip;
-    connection->Connect(ip, game_port);
-    state = ClientState::Game;
+    if (connection->Connect(ip_str, game_port)) {
+        state = ClientState::Game;
+    } 
+    else {
+        state = ClientState::Menu;
+    }
 }
 
 void Client::CreateServer() {

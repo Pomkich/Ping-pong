@@ -20,7 +20,7 @@ private:
 
 public:
 	NetClient(std::shared_ptr<PongObserver> obs);
-	void Connect(sf::IpAddress address, unsigned short port);
+	bool Connect(sf::IpAddress address, unsigned short port);
 	void Disconnect();
 
 	void Write(sf::Packet packet);

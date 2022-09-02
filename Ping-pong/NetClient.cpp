@@ -6,13 +6,13 @@ NetClient::NetClient(std::shared_ptr<PongObserver> obs) {
 	socket.setBlocking(false);
 }
 
-void NetClient::Connect(sf::IpAddress address, unsigned short port) {
+bool NetClient::Connect(sf::IpAddress address, unsigned short port) {
 	socket.setBlocking(true);
 	interrupt = false;
 
 	if (socket.connect(address, port) != sf::Socket::Done) {
 		std::cout << "timeout" << std::endl;
-		return;
+		return false;
 	}
 	else {
 		std::cout << "connection established" << std::endl;
@@ -22,6 +22,7 @@ void NetClient::Connect(sf::IpAddress address, unsigned short port) {
 	// start reading from socket
 	listener = std::move(std::thread(&NetClient::Read, &(*this)));
 	listener.detach();
+	return true;
 }
 
 void NetClient::Disconnect() {
