@@ -13,6 +13,8 @@ private:
 	ClientState state;
 	sf::RenderWindow window;
 
+	std::array<sf::RectangleShape, 3> buttons;
+
 	sf::RectangleShape player;
 	sf::RectangleShape enemy;
 	sf::CircleShape ball;
@@ -35,8 +37,10 @@ public:
 
 private:
 	void Render();
-	void HandleInput();
+	void RenderGame();
+	void RenderMenu();
 
+	void HandleInput();
 	void HandleInputMenu(sf::Event& event);
 	void HandleInputGame(sf::Event& event);
 

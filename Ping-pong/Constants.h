@@ -27,3 +27,8 @@ const int start_ball_speed = screen_width / 2;
 
 const int side_up = 0;
 const int side_bot = 1;
+
+const int button_width = 300;
+const int button_height = 100;
+const int offset_top = 50;
+const int offset_button = 100;

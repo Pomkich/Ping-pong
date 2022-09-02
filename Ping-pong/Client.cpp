@@ -9,7 +9,14 @@ Client::Client() {
 
 	window.create(sf::VideoMode(screen_width, screen_height), "SFML works!");
 
-	// setting up graphics
+    for (int i = 0; i < buttons.size(); i++) {
+        buttons[i].setSize(sf::Vector2f(button_width, button_height));
+        buttons[i].setFillColor(sf::Color::Green);
+        buttons[i].setPosition(sf::Vector2f((screen_width - button_width) / 2,
+            offset_top + offset_button * i + button_height * i));
+    }
+
+	// setting up game graphics
 	player.setSize(sf::Vector2f(panel_width, panel_height));
 	player.setFillColor(sf::Color::White);
 	enemy.setSize(sf::Vector2f(panel_width, panel_height));
@@ -46,15 +53,33 @@ void Client::sendCoordinates(int ball_x, int ball_y, int p1_x, int p1_y, int p2_
 void Client::Render() {
     window.clear();
 
-	window.draw(player);
-	window.draw(enemy);
-	window.draw(ball);
-	window.draw(walls[0]);
-	window.draw(walls[1]);
-	window.draw(lose_bounds[0]);
-	window.draw(lose_bounds[1]);
+    switch (state) {
+    case ClientState::Game:
+        RenderGame();
+        break;
+
+    case ClientState::Menu:
+        RenderMenu();
+        break;
+    }
 
     window.display();
+}
+
+void Client::RenderGame() {
+    window.draw(player);
+    window.draw(enemy);
+    window.draw(ball);
+    window.draw(walls[0]);
+    window.draw(walls[1]);
+    window.draw(lose_bounds[0]);
+    window.draw(lose_bounds[1]);
+}
+
+void Client::RenderMenu() {
+    for (auto& button : buttons) {
+        window.draw(button);
+    }
 }
 
 void Client::Run() {
@@ -152,8 +177,6 @@ void Client::Connect() {
 void Client::CreateServer() {
     std::cout << "creating server..." << std::endl;
     server->Run();
-    //std::this_thread::sleep_for(std::chrono::seconds(2));
-    //server->Stop();
     connection->Connect("127.0.0.1", game_port);
     state = ClientState::Game;
 }
